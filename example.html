@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<title>validin - examples</title>
+	<meta charset="utf-8" />
+	<style>
+		* { box-sizing: border-box; }
+
+		body {
+			width: 90%;
+			max-width: 500px;
+			margin: 80px auto;
+			font-family: 'Lato', 'Open Sans', helvetica, arial, sans-serif;
+		}
+
+		input {
+			display: block;
+			margin: .7em 0 3em;
+			padding: .4em;
+			font-size: 1.4em;
+			border: 1px solid #aaa;
+			border-radius: 3px;
+			outline: none;
+		}
+
+		input:focus {
+			border-color: #23bea1;
+		}
+
+		input + span,
+		.validation_error + span {
+			display: block;
+			margin: -3.8em 0 4em;
+		}
+
+		code {
+			display: block;
+			padding: 1em;
+			background: #ccc;
+		}
+	</style>
+	<link rel="Stylesheet" href="validin.css" type="text/css" media="all" />
+</head>
+
+<body>
+
+	<h1>validin</h1>
+
+	<h3>Validation Examples</h3>
+
+	<form>
+		<input required>
+		<input validate="alpha">
+		<input validate="alpha_num">
+		<input validate="alpha_space">
+		<input validate="alpha_dash">
+		<input validate="alpha_num_dash">
+		<input validate="number">
+		<input validate="decimal">
+		<input validate="name">
+		<input validate="email">
+		<input validate="url">
+		<input validate="phone">
+		<input validate="zip">
+		<input validate="creditcard">
+		<input validate="regex:/[0-9a-z]{1,3}-\d*/i">
+		<span>valid value: 34Z-6 or abc-123</span>
+		<input validate="min:5">
+		<input validate="max:5">
+		<input validate="min_length:5">
+		<input validate="max_length:5">
+		<p>These two fields need to match:</p>
+		<input class="must_match">
+		<input validate="match:.must_match">
+		<input type="submit">
+	</form>
+
+
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="validin.js"></script>
+	<script>
+		$('form').validin({
+			feedback_delay: 500,
+			tests: {
+				'state_abbreviation': {
+					'regex': /[a-z]{2}/i,
+					'error_message': "State abbreviations are two letters long (eg. OR)"
+				}
+			},
+			onValidateInput: function(validation_info) {
+				console.log(validation_info.input);
+				console.log(validation_info.has_error);
+				console.log(validation_info.error_message);
+			}
+		});
+		$(':input:not([type="submit"])').each(function() {
+			$this = $(this);
+			html = $this[0].outerHTML;
+			html = html.replace('required=""', "required")
+				.replace(/&/g, "&amp;")
+	         .replace(/</g, "&lt;")
+	         .replace(/>/g, "&gt;")
+	         .replace(/"/g, "&quot;")
+	         .replace(/'/g, "&#039;");
+
+			$this.before("<code>" + html + "</code>");
+		});
+	</script>
+
+</body>
+</html>
