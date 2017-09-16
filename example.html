@@ -150,11 +150,7 @@
 	<h3 id="examples">Examples</h3>
 	<p>Try testing valid and invalid values in each of the forms to see how validin reacts to user input.</p>
 
-	<form>
-		<h4>Required</h4>
-		<input required placeholder="[any value]">
-		<input type="submit">
-	</form>
+
 	<form>
 		<h4>Letters Only</h4>
 		<input validate="alpha" placeholder="eg. hDcaEw">
@@ -254,6 +250,18 @@
 		<input validate="match:.must_match">
 		<input type="submit">
 	</form>
+	<form>
+		<h4>Required</h4>
+		<p>Unlike the other validations, making a field required uses the 'required' attribute so that it conforms to web and accessibility standards.</p>
+		<input required placeholder="[any value]">
+		<input type="submit">
+	</form>
+	<form>
+		<h4>Multiple Validations</h4>
+		<p>You can apply more than one validation per field by separating each requirement with the "|" character.</p>
+		<input  validate="alpha_num|min_length:2|max_length:5" placeholder="eg. uQ8n" required>
+		<input type="submit">
+	</form>
 
 
 
@@ -278,6 +286,11 @@
 			<br>
 			<i>// Or just a specific one:</i><br>
 			$('.form1').validin();<br>
+		</code>
+
+		<p>Lastly, add 'validate' attributes to all of the input fields that need validation:</p>
+		<code>
+			&lt;input <b>validate="number"</b>>
 		</code>
 
 
