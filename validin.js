@@ -97,8 +97,10 @@ var options = {
 
 
 jQuery.fn.validin = function(user_options) {
-	if(jQuery(this).is('form')) jQuery(this).applyValidation(user_options);
-	else jQuery(this).find('form').applyValidation(user_options);
+	jQuery(this).each(function() {
+		if(jQuery(this).is('form')) jQuery(this).applyValidation(user_options);
+		else jQuery(this).find('form').applyValidation(user_options);
+	});
 }
 
 
@@ -107,26 +109,42 @@ jQuery.fn.applyValidation = function(user_options) {
 
 	jQuery.extend(options, user_options);
 
-	$form = jQuery(this);
-	$inputs = $form.find(':input');
+	$this_form = jQuery(this);
+	$form_inputs = jQuery(this).find(':input');
 
-	disableParentForm($form);
+	disableParentForm(jQuery(this));
 
 	// Validate input when it is changed or blurred
-	$inputs.on('input blur', function(e) {
+	$form_inputs.on('input blur', function(e) {
 		if(jQuery(this).attr('aria-invalid') == "true" || e.type == 'blur') validateInput(jQuery(this), true, options);
 		else validateInput(jQuery(this), false, options);
 	});
 
+
+
 	// Prevent form from being submitted until it has been checked one last time.
-	$inputs.keypress(function(e) {
+	jQuery(this).on('submit', function(e) {
+		$form = jQuery(this);
+
+		if(isFormValid($form)) return;
+
+		e.preventDefault();
+		e.stopPropagation();
+		$form.find(':input[aria-invalid="true"]').first().focus();
+	});
+
+	// Do same when user hits enter key
+	$form_inputs.keypress(function(e) {
+		$form = jQuery(this).closest('form');
+		$inputs = $form.find(':input');
 		if(e.keyCode == 13) {
-			$inputs.each(function() {
-				validateInput(jQuery(this), true, options);
-			});
-			$form.find(':input[aria-invalid="true"]').first().focus();
+			e.preventDefault();
+			e.stopPropagation();
+			if(isFormValid($form)) $form.submit();
+			else $form.find(':input[aria-invalid="true"]').first().focus();
 		}
 	});
+
 }
 
 
@@ -136,9 +154,10 @@ jQuery.fn.applyValidation = function(user_options) {
 
 var validation_debounce_timeout;
 function validateInput($input, run_immediately, _options) {
-
 	has_error = false;
 	error_message = '';
+
+	clearTimeout(validation_debounce_timeout);
 
 	// First check if field is required and filled in
 	if($input.attr('required') && $input.val() == "") {
@@ -147,12 +166,13 @@ function validateInput($input, run_immediately, _options) {
 	}
 
 	// Clear error if previously flagged non-required input is empty
-	else if(!$input.attr('required') && $input.val() == "") {
-		has_error = false;
-		error_message = '';
+	else if(!$input.attr('required') && $input.val() == ""
+		&& $input.attr('validate') && $input.attr('validate').indexOf('match') < 0) { // Ignore 'match' elements in case the element in question is matching a non-blank input
+			has_error = false;
+			error_message = '';
 	}
 
-	// If there is not validation test, set it back to valid
+	// If there is no validation test, set it back to valid
 	else if(!$input.attr('validate')) {
 		has_error = false;
 		error_message = '';
@@ -210,6 +230,7 @@ function validateInput($input, run_immediately, _options) {
 
 			else if(req_values[0] == 'match' && $input.val() != $(req_values[1]).val()) {
 				has_error = true;
+				$(req_values[1]).addClass('match_error');
 				error_message = validation_exp.error_message.replace('%i', req_values[1]);
 			}
 
@@ -217,10 +238,13 @@ function validateInput($input, run_immediately, _options) {
 				has_error = true;
 				error_message = validation_exp.error_message;
 			}
+
+
+			if(req_values[0] == 'match' && $input.val() == $(req_values[1]).val()) {
+				$(req_values[1]).removeClass('match_error');
+			}
 		}
 	}
-
-	clearTimeout(validation_debounce_timeout);
 
 	if(run_immediately) {
 		attachMessage($input, error_message);
@@ -243,9 +267,24 @@ function validateInput($input, run_immediately, _options) {
 		has_error: error_message.length > 0,
 		error_message: error_message
 	});
+
+	return !has_error;
 }
 
 
+function isFormValid($form) {
+	is_valid = true;
+	$inputs = $form.find(':input');
+	$inputs.each(function() {
+		if(validateInput(jQuery(this), true, options) == false) is_valid = false;
+	})
+	// .promise().then(function() {
+	// 	if(is_valid) $form.submit();
+	// 	else $form.find(':input[aria-invalid="true"]').first().focus();
+	// });
+
+	return is_valid;
+}
 
 
 // Attaches message to input field
@@ -277,13 +316,23 @@ function attachMessage($input, message) {
 
 // Disables form from being submitted
 function disableParentForm($form) {
-	has_error = false;
+	$button = $form.find('button, input[type="submit"]');
 
-	if($form.find(':input[aria-invalid="true"]').length) has_error = true;
+	if($form.find(':input[aria-invalid="true"]').length) {
+		setTimeout(function() {
+			attachMessage($button, 'Please fix any errors in the form');
+		}, 100);
+		$button.prop('disabled', true);
+		return;
+	}
 
 	// Check to see if all required fields have values
-	if($form.find(':input[required]').filter(function() { return jQuery(this).val() == ""; }).length) has_error = true;
+	if($form.find(':input[required]').filter(function() { return jQuery(this).val() == ""; }).length) {
+		attachMessage($button, 'Please fill in all required fields');
+		$button.prop('disabled', true);
+		return;
+	}
 
-	if(has_error) $form.find('button, input[type="submit"]').prop('disabled', true);
-	else $form.find('button, input[type="submit"]').prop('disabled', false);
+	attachMessage($button, '');
+	$button.prop('disabled', false);
 }
