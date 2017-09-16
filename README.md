@@ -1,5 +1,7 @@
 # validin
-A clean and easy form validator for jQuery
+An simple and elegant form validator for jQuery
+
+### [Demo](http://projects.thomhines.com/validin/)
 
 
 ### Usage
@@ -24,9 +26,9 @@ A clean and easy form validator for jQuery
 	##### Examples:
 
 		<input name="email" validate="email">
-	
+
 		<input name="address" required>
-	
+
 
 
 ### Validations
@@ -46,27 +48,27 @@ A clean and easy form validator for jQuery
 * **zip** - including both 5 digit and 5+4 formats
 * **creditcard** - checks for basic credit card rules
 * **regex** - javascript style regular expression
-	
+
 		<input validate="regex:/[0-9a-z]{1,3}-\d/i">
-	
+
 * **min** - number, no smaller than the value given
-	
+
 		<input validate="min:5">
-	
+
 * **max** - number, no larger than the value given
-	
+
 		<input validate="max:5">
-	
+
 * **min_length** - any text, no shorter in length than the value given
-	
+
 		<input validate="min_length:5">
-	
+
 * **max_length** - any text, no longer in length than the value given)
-	
+
 		<input validate="max_length:5">
-	
+
 * **match** - Requires that the value of this input matches the element given (any CSS selector will work)
-	
+
 		<input validate="match:.other_input">
 
 
@@ -77,7 +79,7 @@ A clean and easy form validator for jQuery
 * **invalid\_input\_class** - The class name to apply to invalid inputs (default: 'invalid')
 * **error\_message\_class** - The class name to apply to the validation error message elements (default: "validation\_error")
 * **override\_input\_margins** - Setting to true will automatically adjust margins on the validation error message elements to position message close to input (default: true)
-* **tests** - A javascript object that follows this pattern. Any test added to this object will override or be included in the list of default tests listed above. (default: {}) 
+* **tests** - A javascript object that follows this pattern. Any test added to this object will override or be included in the list of default tests listed above. (default: {})
 
 		'validation_test_name': {
 			'regex': /.*/i,
@@ -89,7 +91,7 @@ A clean and easy form validator for jQuery
 	NOTE: validation\_info contains an object with three values: input (the DOM element of the currently tested input), has\_error (boolean), and error\_message (string containing the error message of the current input, if any)
 
 
-	
+
 Adding custom settings might look something like this:
 
 		$('form').validin({
