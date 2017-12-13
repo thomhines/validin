@@ -45,20 +45,45 @@
 		}
 
 		h3 {
-			padding: 6em 0 1em;
+			padding: 4em 0 0em;
 			font-size: 1.5rem;
 		}
 
+		h3:first-of-type {
+			padding-top: 2em;
+		}
+
 		h4 {
-			margin: 2em 0 .6em;
+			margin: 1em 0 .3em;
+			padding: 2em 0 .6em;
 		}
 
 		p {
 			margin: 0 0 1em;
 		}
 
+		ul {
+			margin: -1em 0 1em;
+			padding: 0;
+			font-size: .7em;
+			list-style-position: inside;
+			color: #147160;
+		}
+
+		li {
+
+		}
+
 		a {
 			color: #23bea1;
+		}
+
+		nav {
+			margin: 3em 0;
+		}
+
+		nav a {
+			font-size: 1.3em;
 		}
 
 		input {
@@ -74,7 +99,7 @@
 
 		input[type="submit"] {
 			width: auto;
-			margin-bottom: 6em;
+			margin-bottom: 3em;
 			font-size: .8em;
 			padding: .6em 1.4em;
 			text-transform: uppercase;
@@ -103,7 +128,9 @@
 			display: block;
 			margin: 0 0 1em;
 			padding: 1em;
-			background: #ccc;
+			background: #ddd;
+			overflow-x: auto;
+			white-space: nowrap;
 		}
 
 		code i {
@@ -122,6 +149,7 @@
 
 
 	</style>
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
 	<link rel="Stylesheet" href="validin.css" type="text/css" media="all" />
 </head>
 
@@ -141,125 +169,171 @@
 	</div>
 
 	<p>Validin tries to take the headache out of form validation by making things simple and keeping your markup clean. <b>Dependencies</b>: Just <a href="https://jquery.com/">jQuery</a>.</p>
-	<p><a href="#examples">Examples</a></p>
-	<p><a href="#installation">Installation & Usage</a></p>
-	<p><a href="#options">Options</a></p>
-	<p><a href="LICENSE">License</a></p>
+
+	<nav>
+		<p><a href="#installation">Installation & Usage</a></p>
+		<p><a href="#examples">Examples</a></p>
+		<ul>
+			<li><a href="#letters_only">Letters, Numbers and Special Characters</a></li>
+			<li><a href="#email">Email Address</a></li>
+			<li><a href="#url">URL</a></li>
+			<li><a href="#phone">Phone</a></li>
+			<li><a href="#zip_code">Zip Code</a></li>
+			<li><a href="#credit_card">Credit Card</a></li>
+			<li><a href="#regular_expressions">Regular Expressions</a></li>
+			<li><a href="#minimum_value">Minimum Value (Assumes Number)</a></li>
+			<li><a href="#maximum_value">Maximum Value (Assumes Number)</a></li>
+			<li><a href="#minimum_length">Minimum Value Length</a></li>
+			<li><a href="#maximum_length">Maximum Value Length</a></li>
+			<li><a href="#matching_fields">Matching Fields</a></li>
+			<li><a href="#required">Required Fields</a></li>
+			<li><a href="#multiple">Multiple Validations</a></li>
+		</ul>
+		<p><a href="#options">Options</a></p>
+		<ul>
+			<li><a href="#custom_validation_tests">Adding Custom Validation Tests</a></li>
+		</ul>
+		<p><a href="LICENSE">License</a></p>
+	</nav>
+
+
+
+	<h3 id="installation">Installation & Usage</h3>
+	<p>First, link to <b>jQuery</b> and <b>validin</b> in your HTML:</p>
+	<code>
+		&lt;link rel="Stylesheet" href="validin.css" type="text/css" /><br>
+		&lt;script src="https://code.jquery.com/jquery-3.2.1.min.js">&lt;/script><br>
+		&lt;script src="validin.js">&lt;/script><br>
+	</code>
+
+	<p>Then activate it on your forms:</p>
+	<code>
+		<i>// You can enable validin on all forms in your page:</i><br>
+		$(window).validin();<br>
+		<br>
+		<i>// Or just a specific form:</i><br>
+		$('.form1').validin();<br>
+	</code>
+
+	<p>Lastly, add 'validate' attributes to all of the input fields that need validation:</p>
+	<code>
+		&lt;input <b>validate="number"</b>>
+	</code>
 
 
 	<h3 id="examples">Examples</h3>
 	<p>Try testing valid and invalid values in each of the forms to see how validin reacts to user input.</p>
 
 
-	<form>
+	<form id="letters_only">
 		<h4>Letters Only</h4>
 		<input validate="alpha" placeholder="eg. hDcaEw">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="letters_numbers">
 		<h4>Letters and Numbers</h4>
 		<input validate="alpha_num" placeholder="eg. nrR33sB">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="letters_spaces">
 		<h4>Letters and Spaces</h4>
 		<input validate="alpha_space" placeholder="eg. Hwg sWK ifO">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="alpha_dash">
 		<h4>Letters, Dashes and Underscores</h4>
 		<input validate="alpha_dash" placeholder="eg. vLe-rP_z">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="alpha_num_dash">
 		<h4>Letters, Numbers, Dashes and Underscores</h4>
 		<input validate="alpha_num_dash" placeholder="eg. l4_7Jv-55">
 		<input type="submit">
 	</form>
-	<form>
-		<h4>Whole Numbers Only</h4>
+	<form id="number">
+		<h4>Whole Numbers</h4>
 		<input validate="number" placeholder="eg. 9372">
 		<input type="submit">
 	</form>
-	<form>
-		<h4>Numbers, Decimals Allowed</h4>
+	<form id="decimal">
+		<h4>Numbers (Decimals Allowed)</h4>
 		<input validate="decimal" placeholder="eg. 839.20">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="name">
 		<h4>Name Characters Only</h4>
 		<h5>Name charactes assumes all letters, dashes, apostrophes and periods</h5>
 		<input validate="name" placeholder="eg. Jenny P. O'Leary-Bates">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="email">
 		<h4>Email</h4>
 		<input validate="email" placeholder="eg. example@website.com">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="url">
 		<h4>URL</h4>
 		<input validate="url" placeholder="eg. http://anysite.com/">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="phone">
 		<h4>Phone</h4>
 		<input validate="phone" placeholder="eg. 681-555-4980">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="zip_code">
 		<h4>Zip Code (US)</h4>
 		<input validate="zip" placeholder="eg. 82348 or 92062-3452">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="credit_card">
 		<h4>Credit Card</h4>
-		<input validate="creditcard" placeholder="eg. ">
+		<input validate="creditcard" placeholder="eg. 4019401940194019">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="regular_expressions">
 		<h4>Regular Expressions</h4>
 		<input validate="regex:/[0-9a-z]{1,3}-\d+/i" placeholder="eg. 34Z-6 or abc-123">
-		<p>Valid values for the above regular expression follow this pattern:<br>three numbers or letters, a dash, and then any whole number</p>
+		<p>Valid values for the above regular expression follow this pattern:<br>up to three numbers or letters, then a dash, and then any whole number</p>
 		<input type="submit">
 	</form>
-	<form>
+	<form id="minimum_value">
 		<h4>Minimum Value (Assumes Number)</h4>
 		<input validate="min:5" placeholder="eg. 42">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="maximum_value">
 		<h4>Maximum Value (Assumes Number)</h4>
 		<input validate="max:5" placeholder="eg. -7">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="minimum_length">
 		<h4>Minimum Value Length</h4>
 		<input validate="min_length:5" placeholder="eg. Eo7j1Y">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="maximum_length">
 		<h4>Maximum Value Length</h4>
 		<input validate="max_length:5" placeholder="eg. i3Ox">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="matching_fields">
 		<h4>Matching Fields</h4>
 		<p>These two fields need to match:</p>
 		<input class="must_match">
 		<input validate="match:.must_match">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="required">
 		<h4>Required</h4>
 		<p>Unlike the other validations, making a field required uses the 'required' attribute so that it conforms to web and accessibility standards.</p>
 		<input required placeholder="[any value]">
 		<input type="submit">
 	</form>
-	<form>
+	<form id="multiple">
 		<h4>Multiple Validations</h4>
 		<p>You can apply more than one validation per field by separating each requirement with the "|" character.</p>
-		<input  validate="alpha_num|min_length:2|max_length:5" placeholder="eg. uQ8n" required>
+		<input validate="alpha_num|min_length:2|max_length:5" placeholder="eg. uQ8n" required>
 		<input type="submit">
 	</form>
 
@@ -268,76 +342,59 @@
 
 
 
+	<h3 id="options">Options</h3>
+	<p>Validin comes pretty much perfect right out of the box, but there are some ways to customize it's behavior. You can add options to the validin() function like so:</p>
+	<code>
+		options = {<br>
+			&nbsp;&nbsp;feedback_delay: 1000,<br>
+			&nbsp;&nbsp;invalid_input_class: "bad_input"<br>
+		};<br>
+		<br>
+		$(window).validin(options);
+	</code>
+
+	<p>Here are the available settings and their defaults:</p>
+
+	<code>
+		feedback_delay: 700, <i>// Number of ms after input before testing validity</i><br>
+		invalid_input_class: "invalid", <i>// Class name added to invalid inputs</i><br>
+		error_message_class: "validation_error", <i>// Class name added to forms with validation errors</i><br>
+		form_error_message: "Please fix any errors in the form", <i>// The message that appears at the bottom of a form if there are any errors present</i><br>
+		required_fields_initial_error_message: "Please fill in all required fields", <i>// Initial message showing why form is disabled if there are required fields but no errors</i><br>
+		required_field_error_message: "This field is required", <i>// Message shown next to required fields that are not filled in AFTER field has lost focus</i><br>
+		tests: [] <i>// Array of custom validation tests (see below)</i>
+	</code>
+
+	<h4 id="custom_validation_tests">Adding Custom Validation Tests</h4>
+	<p>There are a bunch of validation tests already built into validin, but you can make your own with the 'tests' option. Custom validation tests follow this syntax:</p>
+	<code>
+		'validation_name': {<br>
+		&nbsp;&nbsp;'regex': [RegEx], <i>// Regular expression to test if input is valid</i><br>
+		&nbsp;&nbsp;'error_message': [string] <i>// The message shown if field is invalid</i><br>
+		}<br>
+	</code>
+
+	<p>For example, you might put this in your validin options to test an input field for two-letter values, such as you'd find in US state abbreviations:</p>
+	<code>
+		tests: {<br>
+			&nbsp;&nbsp;'state_abbreviation': {<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;'regex': /[A-Z]{2}/,<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;'error_message': "States are abbreviated two capital letters"<br>
+			&nbsp;&nbsp;}<br>
+		}
+	</code>
+
+	<form id="maximum_length">
+		<p>The above code would allow you to use that test on a field like so:</p>
+		<input validate="state_abbreviation" placeholder="eg. OR">
+		<input type="submit">
+	</form>
 
 
 
-		<h3 id="installation">Installation & Usage</h3>
-		<p>First, link to jQuery and validin in your HTML:</p>
-		<code>
-			&lt;link rel="Stylesheet" href="validin.css" type="text/css" /><br>
-			&lt;script src="https://code.jquery.com/jquery-3.2.1.min.js">&lt;/script><br>
-			&lt;script src="validin.js">&lt;/script><br>
-		</code>
-
-		<p>Then activate it on your forms:</p>
-		<code>
-			<i>// You can enable validin on all forms in your page:</i><br>
-			$(window).validin();<br>
-			<br>
-			<i>// Or just a specific one:</i><br>
-			$('.form1').validin();<br>
-		</code>
-
-		<p>Lastly, add 'validate' attributes to all of the input fields that need validation:</p>
-		<code>
-			&lt;input <b>validate="number"</b>>
-		</code>
-
-
-
-		<h3 id="options">Options</h3>
-		<p>Validin comes pretty much perfect right out of the box, but there are some ways to customize it's behavior. You can add options to the validin() function like so:</p>
-		<code>
-			options = {<br>
-				&nbsp;&nbsp;feedback_delay: 1000<br>
-			};<br>
-<br>
-			$(window).validin(options);
-		</code>
-
-		<p>Here are the available settings and their defaults:</p>
-
-		<code>
-			feedback_delay: 700,<br>
-			invalid_input_class: 'invalid',<br>
-			error_message_class: "validation_error",<br>
-			tests: [validation_tests] <i>// See below</i>
-		</code>
-
-		<h4>Adding Additional Validation Tests</h4>
-		<p>There are a bunch of validation tests already built into validin, but you can make your own with the 'tests' option. Custom validation tests follow this syntax:</p>
-		<code>
-			'validation_name': {<br>
-			&nbsp;&nbsp;'regex': [RegEx], <i>// Regular expression to test if input is valid</i><br>
-			&nbsp;&nbsp;'error_message': [string] <i>// The message shown if field is invalid</i><br>
-			}<br>
-		</code>
-
-		<p>For example, you might put this in your validin options to test an input field for two-letter values, such as you'd find in US state abbreviations:</p>
-		<code>
-			tests: {<br>
-				&nbsp;&nbsp;'state_abbreviation': {<br>
-					&nbsp;&nbsp;&nbsp;&nbsp;'regex': /[a-z]{2}/i,<br>
-					&nbsp;&nbsp;&nbsp;&nbsp;'error_message': "Enter a valid abbreviation (eg. TX)"<br>
-				&nbsp;&nbsp;}<br>
-			}
-		</code>
-
-
-
-		<footer>
-			validin &copy; 2017, Thom Hines
-		</footer>
+	<footer>
+		validin &copy; 2017, Thom Hines
+	</footer>
 
 
 
@@ -349,8 +406,8 @@
 			feedback_delay: 500,
 			tests: {
 				'state_abbreviation': {
-					'regex': /[a-z]{2}/i,
-					'error_message': "State abbreviations are two letters long (eg. OR)"
+					'regex': /[A-Z]{2}/,
+					'error_message': "States are abbreviated two capital letters"
 				}
 			},
 			onValidateInput: function(validation_info) {

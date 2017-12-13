@@ -7,12 +7,12 @@ An simple and elegant form validator for jQuery
 ### Usage
 
 
-1. First, make sure you link to a version of jQuery and validin in your HTML (validin CSS optional).
+1. First, make sure you link to a version of jQuery and validin JS in your HTML (validin CSS optional).
 
 
 2. Next, apply validin to a form in your scripts like so:
 
-		$('form').validin(options);
+		$('.form1').validin(options);
 
 
 	Or to every form on a page:
@@ -78,6 +78,9 @@ An simple and elegant form validator for jQuery
 * **feedback\_delay** - The number of milliseconds before showing a validation error (default: 700)
 * **invalid\_input\_class** - The class name to apply to invalid inputs (default: 'invalid')
 * **error\_message\_class** - The class name to apply to the validation error message elements (default: "validation\_error")
+* **form\_error\_message** - The message that appears at the bottom of a form if there are any errors present (default: "Please fix any errors in the form")
+* **required\_fields\_initial\_error\_message** - Initial message showing why form is disabled if there are required fields but no errors (default: "Please fill in all required fields")
+* **required\_field\_error\_message** - Message shown next to required fields that are not filled in AFTER field has lost focus (default: "This field is required")
 * **override\_input\_margins** - Setting to true will automatically adjust margins on the validation error message elements to position message close to input (default: true)
 * **tests** - A javascript object that follows this pattern. Any test added to this object will override or be included in the list of default tests listed above. (default: {})
 
@@ -86,7 +89,7 @@ An simple and elegant form validator for jQuery
 			'error_message': "These values have to match"
 		}
 
-* **onValidateInput**: A callback function that will be run everytime a validation test is executed (default: function(validation_info) {})
+* **onValidateInput**: A callback function that will be run every time a validation test is executed (default: function(validation_info) {})
 
 	NOTE: validation\_info contains an object with three values: input (the DOM element of the currently tested input), has\_error (boolean), and error\_message (string containing the error message of the current input, if any)
 

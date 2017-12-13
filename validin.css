@@ -1,3 +1,7 @@
+input {
+	box-shadow: none;
+}
+
 input.invalid,
 .match_error,
 .match_error:focus {

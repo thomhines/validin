@@ -1,10 +1,12 @@
-/*----------------------------------------------------------------------*
-
- 	VALIDIN.JS
-	made by Thom Hines
-	MIT License
-
-*----------------------------------------------------------------------*/
+/*
+* validin
+* Elegant form validation
+* Copyright (c) 2017 Thom Hines
+* Licensed under MIT.
+* @author Thom Hines
+* https://github.com/thomhines/validin
+* @version 0.1.0
+*/
 
 var options = {
 	validation_tests: {
@@ -86,8 +88,11 @@ var options = {
 		}
 	},
 	feedback_delay: 700,
-	invalid_input_class: 'invalid',
+	invalid_input_class: "invalid",
 	error_message_class: "validation_error",
+	form_error_message: "Please fix any errors in the form",
+	required_fields_initial_error_message: "Please fill in all required fields",
+	required_field_error_message: "This field is required",
 	override_input_margins: true,
 	tests: {},
 	onValidateInput: function() {}
@@ -147,7 +152,14 @@ jQuery.fn.applyValidation = function(user_options) {
 
 }
 
-
+jQuery.fn.getValue = function() {
+	if(this.is(':checkbox') && this.is(':checked')) return true;
+	else if(this.is(':checkbox') && !this.is(':checked')) return false;
+	else if(this.is(':radio') && $('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return $('input[name="'+this.attr('name')+'"]').filter(':checked').val();
+	else if(this.is(':radio') && !$('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return false;
+	else if(this.val()) return this.val();
+	return false;
+}
 
 
 
@@ -159,11 +171,14 @@ function validateInput($input, run_immediately, _options) {
 
 	clearTimeout(validation_debounce_timeout);
 
+	if($input.is(':radio')) $input = $('input[name="'+$input.attr('name')+'"]').last(); // Only apply validation to last radio button
+
 	// First check if field is required and filled in
-	if($input.attr('required') && $input.val() == "") {
+	if($input.attr('required') && !$input.getValue()) {
 		has_error = true;
-		error_message = 'This field is required.';
+		error_message = options.required_field_error_message;
 	}
+
 
 	// Clear error if previously flagged non-required input is empty
 	else if(!$input.attr('required') && $input.val() == ""
@@ -273,15 +288,13 @@ function validateInput($input, run_immediately, _options) {
 
 
 function isFormValid($form) {
+	console.log('isformvalid');
 	is_valid = true;
 	$inputs = $form.find(':input');
 	$inputs.each(function() {
+		console.log($(this));
 		if(validateInput(jQuery(this), true, options) == false) is_valid = false;
-	})
-	// .promise().then(function() {
-	// 	if(is_valid) $form.submit();
-	// 	else $form.find(':input[aria-invalid="true"]').first().focus();
-	// });
+	});
 
 	return is_valid;
 }
@@ -320,15 +333,15 @@ function disableParentForm($form) {
 
 	if($form.find(':input[aria-invalid="true"]').length) {
 		setTimeout(function() {
-			attachMessage($button, 'Please fix any errors in the form');
+			attachMessage($button, options.form_error_message);
 		}, 100);
 		$button.prop('disabled', true);
 		return;
 	}
 
 	// Check to see if all required fields have values
-	if($form.find(':input[required]').filter(function() { return jQuery(this).val() == ""; }).length) {
-		attachMessage($button, 'Please fill in all required fields');
+	if($form.find(':input[required]').filter(function() { console.log(jQuery(this).getValue()); return !jQuery(this).getValue(); }).length) {
+		attachMessage($button, options.required_fields_initial_error_message);
 		$button.prop('disabled', true);
 		return;
 	}
