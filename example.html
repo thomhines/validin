@@ -95,14 +95,14 @@
 			border: 1px solid #aaa;
 			border-radius: 3px;
 			outline: none;
-			box-shadow: 2px 2px 5px rgba(0,0,0,.15);
+			box-shadow: 3px 3px 5px rgba(0,0,0,.15);
 		}
 
 		input[type="submit"] {
 			width: auto;
 			margin-bottom: 3em;
 			font-size: .8em;
-			padding: .6em 1.4em;
+			padding: .8em 1.4em;
 			text-transform: uppercase;
 			transition: opacity .2s ease-in-out;
 			background-color: #666;
@@ -149,7 +149,7 @@
 			display: block;
 			margin: 0 0 1em;
 			padding: 1em;
-			background: #ddd;
+			background: #e6e6e6;
 			color: #333;
 			font-weight: 600;
 			overflow-x: auto;
@@ -223,8 +223,11 @@
 	<h3 id="installation">Installation & Usage</h3>
 	<p>First, link to <b>jQuery</b> and <b>validin</b> in your HTML:</p>
 	<code>
+		<i>&lt;!-- validin styles: --></i><br>
 		&lt;link rel="Stylesheet" href="validin.css" type="text/css" /><br>
-		&lt;script src="https://code.jquery.com/jquery-3.2.1.min.js">&lt;/script><br>
+		<i>&lt;!-- jQuery: --></i><br>
+		&lt;script src="https://code.jquery.com/jquery-3.3.1.min.js">&lt;/script><br>
+		<i>&lt;!-- validin scripts: --></i><br>
 		&lt;script src="validin.js">&lt;/script><br>
 	</code>
 
@@ -450,7 +453,7 @@
 
 
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="validin.js"></script>
 	<script>
 		$('form').validin({
