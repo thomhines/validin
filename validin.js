@@ -5,10 +5,10 @@
 * Licensed under MIT.
 * @author Thom Hines
 * https://github.com/thomhines/validin
-* @version 0.1.0
+* @version 0.1.1
 */
 
-var options = {
+var validin_default_options = {
 	validation_tests: {
 		'alpha': {
 			'regex': /[a-zA-Z]*/,
@@ -94,7 +94,7 @@ var options = {
 	required_fields_initial_error_message: "Please fill in all required fields",
 	required_field_error_message: "This field is required",
 	override_input_margins: true,
-	tests: {},
+	custom_tests: {},
 	onValidateInput: function() {}
 }
 
@@ -112,17 +112,20 @@ jQuery.fn.validin = function(user_options) {
 
 jQuery.fn.applyValidation = function(user_options) {
 
-	jQuery.extend(options, user_options);
+	options = jQuery.extend(validin_default_options, user_options);
 
 	$this_form = jQuery(this);
+	$this_form.data('vn_options', options);
 	$form_inputs = jQuery(this).find(':input');
 
-	disableParentForm(jQuery(this));
+	$('[validate*="required"]').attr('required', true);
+
+	vnDisableParentForm(jQuery(this));
 
 	// Validate input when it is changed or blurred
 	$form_inputs.on('input blur', function(e) {
-		if(jQuery(this).attr('aria-invalid') == "true" || e.type == 'blur') validateInput(jQuery(this), true, options);
-		else validateInput(jQuery(this), false, options);
+		if(jQuery(this).attr('aria-invalid') == "true" || e.type == 'blur') vnValidateInput(jQuery(this), true);
+		else vnValidateInput(jQuery(this), false);
 	});
 
 
@@ -131,7 +134,7 @@ jQuery.fn.applyValidation = function(user_options) {
 	jQuery(this).on('submit', function(e) {
 		$form = jQuery(this);
 
-		if(isFormValid($form)) return;
+		if(vnIsFormValid($form)) return;
 
 		e.preventDefault();
 		e.stopPropagation();
@@ -145,7 +148,7 @@ jQuery.fn.applyValidation = function(user_options) {
 		if(e.keyCode == 13) {
 			e.preventDefault();
 			e.stopPropagation();
-			if(isFormValid($form)) $form.submit();
+			if(vnIsFormValid($form)) $form.submit();
 			else $form.find(':input[aria-invalid="true"]').first().focus();
 		}
 	});
@@ -165,9 +168,10 @@ jQuery.fn.getValue = function() {
 
 
 var validation_debounce_timeout;
-function validateInput($input, run_immediately, _options) {
+function vnValidateInput($input, run_immediately) {
 	has_error = false;
 	error_message = '';
+	options = $this_form.data('vn_options');
 
 	clearTimeout(validation_debounce_timeout);
 
@@ -200,10 +204,12 @@ function validateInput($input, run_immediately, _options) {
 		for(x = 0; x < reqs.length; x++) {
 			req_values = reqs[x].split(':');
 
-			if(_options.tests[req_values[0]]) validation_exp = _options.tests[req_values[0]];
-			else validation_exp = _options.validation_tests[req_values[0]];
+			if(options.custom_tests && options.custom_tests[req_values[0]]) validation_exp = options.custom_tests[req_values[0]];
+			else validation_exp = options.validation_tests[req_values[0]];
 
-			if(req_values[0] == 'regex') {
+			if(req_values[0] == 'required') {} // Already handled by code above referring to 'required' attribute
+
+			else if(req_values[0] == 'regex') {
 				var regex_modifiers = "";
 
 				regex_array = req_values;
@@ -223,17 +229,17 @@ function validateInput($input, run_immediately, _options) {
 				}
 			}
 
-			if(req_values[0] == 'min' && (parseFloat($input.val()) < parseFloat(req_values[1]) || parseFloat($input.val()) != $input.val())) {
+			else if(req_values[0] == 'min' && (parseFloat($input.val()) < parseFloat(req_values[1]) || parseFloat($input.val()) != $input.val())) {
 				has_error = true;
 				error_message = validation_exp.error_message.replace('%i', req_values[1]);
 			}
 
-			if(req_values[0] == 'max' && (parseFloat($input.val()) > parseFloat(req_values[1]) || parseFloat($input.val()) != $input.val())) {
+			else if(req_values[0] == 'max' && (parseFloat($input.val()) > parseFloat(req_values[1]) || parseFloat($input.val()) != $input.val())) {
 				has_error = true;
 				error_message = validation_exp.error_message.replace('%i', req_values[1]);
 			}
 
-			if(req_values[0] == 'min_length' && $input.val().length < req_values[1]) {
+			else if(req_values[0] == 'min_length' && $input.val().length < req_values[1]) {
 				has_error = true;
 				error_message = validation_exp.error_message.replace('%i', req_values[1]);
 			}
@@ -262,22 +268,22 @@ function validateInput($input, run_immediately, _options) {
 	}
 
 	if(run_immediately) {
-		attachMessage($input, error_message);
+		vnAttachMessage($input, error_message);
 		if(has_error) $input.attr('aria-invalid', "true").addClass(options.invalid_input_class);
 		else $input.attr('aria-invalid', "false").removeClass(options.invalid_input_class);
-		disableParentForm($input.closest('form'));
+		vnDisableParentForm($input.closest('form'));
 	}
 	else {
 		validation_debounce_timeout = setTimeout(function() {
-			attachMessage($input, error_message);
+			vnAttachMessage($input, error_message);
 			if(has_error) $input.attr('aria-invalid', "true").addClass(options.invalid_input_class);
 			else $input.attr('aria-invalid', "false").removeClass(options.invalid_input_class);
-			disableParentForm($input.closest('form'));
-		}, _options.feedback_delay);
+			vnDisableParentForm($input.closest('form'));
+		}, options.feedback_delay);
 	}
 
 	// User callback function
-	if(_options.onValidateInput) _options.onValidateInput({
+	if(options.onValidateInput) options.onValidateInput({
 		input: $input[0],
 		has_error: error_message.length > 0,
 		error_message: error_message
@@ -287,13 +293,12 @@ function validateInput($input, run_immediately, _options) {
 }
 
 
-function isFormValid($form) {
-	console.log('isformvalid');
+function vnIsFormValid($form) {
+	options = $this_form.data('vn_options');
 	is_valid = true;
 	$inputs = $form.find(':input');
 	$inputs.each(function() {
-		console.log($(this));
-		if(validateInput(jQuery(this), true, options) == false) is_valid = false;
+		if(vnValidateInput(jQuery(this), true) == false) is_valid = false;
 	});
 
 	return is_valid;
@@ -301,7 +306,9 @@ function isFormValid($form) {
 
 
 // Attaches message to input field
-function attachMessage($input, message) {
+function vnAttachMessage($input, message) {
+	options = $this_form.data('vn_options');
+
 	// Remove error message if no message is present
 	if(message == '' && $input.next().hasClass('validation_error')) {
 		$input.next().fadeOut(400, function() {
@@ -328,24 +335,25 @@ function attachMessage($input, message) {
 
 
 // Disables form from being submitted
-function disableParentForm($form) {
+function vnDisableParentForm($form) {
+	options = $this_form.data('vn_options');
 	$button = $form.find('button, input[type="submit"]');
 
 	if($form.find(':input[aria-invalid="true"]').length) {
 		setTimeout(function() {
-			attachMessage($button, options.form_error_message);
+			vnAttachMessage($button, options.form_error_message);
 		}, 100);
 		$button.prop('disabled', true);
 		return;
 	}
 
 	// Check to see if all required fields have values
-	if($form.find(':input[required]').filter(function() { console.log(jQuery(this).getValue()); return !jQuery(this).getValue(); }).length) {
-		attachMessage($button, options.required_fields_initial_error_message);
+	if($form.find(':input[required]').filter(function() { return !jQuery(this).getValue(); }).length) {
+		vnAttachMessage($button, options.required_fields_initial_error_message);
 		$button.prop('disabled', true);
 		return;
 	}
 
-	attachMessage($button, '');
+	vnAttachMessage($button, '');
 	$button.prop('disabled', false);
 }

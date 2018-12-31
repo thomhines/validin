@@ -82,7 +82,7 @@ An simple and elegant form validator for jQuery
 * **required\_fields\_initial\_error\_message** - Initial message showing why form is disabled if there are required fields but no errors (default: "Please fill in all required fields")
 * **required\_field\_error\_message** - Message shown next to required fields that are not filled in AFTER field has lost focus (default: "This field is required")
 * **override\_input\_margins** - Setting to true will automatically adjust margins on the validation error message elements to position message close to input (default: true)
-* **tests** - A javascript object that follows this pattern. Any test added to this object will override or be included in the list of default tests listed above. (default: {})
+* **custom_tests** - A javascript object that follows this pattern. Any test on this object will be added to the list of included tests listed above. (default: {})
 
 		'validation_test_name': {
 			'regex': /.*/i,

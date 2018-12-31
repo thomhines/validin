@@ -70,10 +70,6 @@
 			color: #147160;
 		}
 
-		li {
-
-		}
-
 		a {
 			color: #23bea1;
 		}
@@ -86,7 +82,9 @@
 			font-size: 1.3em;
 		}
 
-		input {
+		input,
+		select,
+		textarea {
 			display: block;
 			width: 300px;
 			margin: .7em 0;
@@ -116,6 +114,11 @@
 
 		input:focus {
 			border-color: #23bea1;
+		}
+
+		select {
+			height: 40px;
+			background: #fff;
 		}
 
 		input+span,
@@ -188,6 +191,7 @@
 			<li><a href="#matching_fields">Matching Fields</a></li>
 			<li><a href="#required">Required Fields</a></li>
 			<li><a href="#multiple">Multiple Validations</a></li>
+			<li><a href="#different_types">Different Input Types</a></li>
 		</ul>
 		<p><a href="#options">Options</a></p>
 		<ul>
@@ -326,7 +330,7 @@
 	</form>
 	<form id="required">
 		<h4>Required</h4>
-		<p>Unlike the other validations, making a field required uses the 'required' attribute so that it conforms to web and accessibility standards.</p>
+		<p>Making a field required can be done using the 'required' attribute as below (which conforms to web and accessibility standards) or using the 'required' validation setting (eg. "validate='required'").</p>
 		<input required placeholder="[any value]">
 		<input type="submit">
 	</form>
@@ -336,6 +340,35 @@
 		<input validate="alpha_num|min_length:2|max_length:5" placeholder="eg. uQ8n" required>
 		<input type="submit">
 	</form>
+	<form id="different_types">
+		<h4>Different Input Types</h4>
+		<p>These validations will work with just about any input type, including...</p>
+		<h5>Ranges</h5>
+		<input validate="min:50" type="range"> 
+		<p>Value: <span class="range_value">50</span></p>
+		<input type="submit">
+	</form>
+	<form>
+		<h5>Selects</h5>
+		<select validate="max:5">
+			<option>-1</option> 
+			<option>4</option>
+			<option>7</option>
+			<option>13</option>
+		</select>
+		<input type="submit">
+	</form>
+	<form>
+		<h5>Checkboxes</h5>
+		<input type="checkbox" required> <label>(this field is required)</label>
+		<input type="submit">
+	</form>
+	<form>
+		<h5>Textareas</h5>
+		<textarea validate="max_length:10" placeholder="This text should be no longer than 10 characters."></textarea>
+		<input type="submit">
+	</form>
+
 
 
 
@@ -376,7 +409,7 @@
 
 	<p>For example, you might put this in your validin options to test an input field for two-letter values, such as you'd find in US state abbreviations:</p>
 	<code>
-		tests: {<br>
+		custom_tests: {<br>
 			&nbsp;&nbsp;'state_abbreviation': {<br>
 				&nbsp;&nbsp;&nbsp;&nbsp;'regex': /[A-Z]{2}/,<br>
 				&nbsp;&nbsp;&nbsp;&nbsp;'error_message': "States are abbreviated two capital letters"<br>
@@ -404,7 +437,7 @@
 	<script>
 		$('form').validin({
 			feedback_delay: 500,
-			tests: {
+			custom_tests: {
 				'state_abbreviation': {
 					'regex': /[A-Z]{2}/,
 					'error_message': "States are abbreviated two capital letters"
@@ -433,8 +466,20 @@
 				.replace(/"/g, "&quot;")
 				.replace(/'/g, "&#039;");
 
+
+			
+			if(html.indexOf('option') > 0) {
+
+				html = html.substr(0, html.indexOf("&gt;") + 3);
+			}
+
 			$this.before("<code>" + html + "</code>");
 		});
+
+		$('[type="range"]').on('change', function() {
+			$input = $(this);
+			$input.siblings('p').find('.range_value').html($input.val());
+		})
 	</script>
 
 </body>
