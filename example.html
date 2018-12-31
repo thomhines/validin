@@ -4,6 +4,8 @@
 <head>
 	<title>validin | elegant form validation</title>
 	<meta charset="utf-8" />
+	<link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+	<link rel="Stylesheet" href="validin.css" type="text/css" media="all" />
 	<style>
 		* {
 			box-sizing: border-box;
@@ -93,6 +95,7 @@
 			border: 1px solid #aaa;
 			border-radius: 3px;
 			outline: none;
+			box-shadow: 2px 2px 5px rgba(0,0,0,.15);
 		}
 
 		input[type="submit"] {
@@ -102,6 +105,16 @@
 			padding: .6em 1.4em;
 			text-transform: uppercase;
 			transition: opacity .2s ease-in-out;
+			background-color: #666;
+			color: #fff;
+			border: none;
+		}
+
+		input[type="submit"]:hover,
+		input[type="submit"]:focus,
+		input[type="submit"]:active {
+			background-color: #23bea1;
+			color: #fff;
 		}
 
 		input[type="submit"]:disabled {
@@ -114,6 +127,11 @@
 
 		input:focus {
 			border-color: #23bea1;
+		}
+
+		input[type="checkbox"],
+		input[type="range"] {
+			box-shadow: none;
 		}
 
 		select {
@@ -132,6 +150,8 @@
 			margin: 0 0 1em;
 			padding: 1em;
 			background: #ddd;
+			color: #333;
+			font-weight: 600;
 			overflow-x: auto;
 			white-space: nowrap;
 		}
@@ -152,8 +172,6 @@
 
 
 	</style>
-	<link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
-	<link rel="Stylesheet" href="validin.css" type="text/css" media="all" />
 </head>
 
 
@@ -360,7 +378,7 @@
 	</form>
 	<form>
 		<h5>Checkboxes</h5>
-		<input type="checkbox" required> <label>(this field is required)</label>
+		<input type="checkbox" required> <label>Click this checkbox</label>
 		<input type="submit">
 	</form>
 	<form>
@@ -395,7 +413,7 @@
 		form_error_message: "Please fix any errors in the form", <i>// The message that appears at the bottom of a form if there are any errors present</i><br>
 		required_fields_initial_error_message: "Please fill in all required fields", <i>// Initial message showing why form is disabled if there are required fields but no errors</i><br>
 		required_field_error_message: "This field is required", <i>// Message shown next to required fields that are not filled in AFTER field has lost focus</i><br>
-		tests: [] <i>// Array of custom validation tests (see below)</i>
+		custom_tests: [] <i>// Array of custom validation tests (see below)</i>
 	</code>
 
 	<h4 id="custom_validation_tests">Adding Custom Validation Tests</h4>
@@ -412,7 +430,7 @@
 		custom_tests: {<br>
 			&nbsp;&nbsp;'state_abbreviation': {<br>
 				&nbsp;&nbsp;&nbsp;&nbsp;'regex': /[A-Z]{2}/,<br>
-				&nbsp;&nbsp;&nbsp;&nbsp;'error_message': "States are abbreviated two capital letters"<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;'error_message': "States are abbreviated with two capital letters"<br>
 			&nbsp;&nbsp;}<br>
 		}
 	</code>
@@ -440,7 +458,7 @@
 			custom_tests: {
 				'state_abbreviation': {
 					'regex': /[A-Z]{2}/,
-					'error_message': "States are abbreviated two capital letters"
+					'error_message': "States are abbreviated with two capital letters"
 				}
 			},
 			onValidateInput: function(validation_info) {
