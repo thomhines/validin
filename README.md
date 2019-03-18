@@ -75,7 +75,7 @@ An simple and elegant form validator for jQuery
 
 ### Options
 
-* **feedback\_delay** - The number of milliseconds before showing a validation error (default: 700)
+* **feedback\_delay** - The number of milliseconds before showing a validation error (default: 1500)
 * **invalid\_input\_class** - The class name to apply to invalid inputs (default: 'invalid')
 * **error\_message\_class** - The class name to apply to the validation error message elements (default: "validation\_error")
 * **form\_error\_message** - The message that appears at the bottom of a form if there are any errors present (default: "Please fix any errors in the form")

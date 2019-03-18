@@ -87,7 +87,7 @@ var validin_default_options = {
 			'error_message': "These values have to match"
 		}
 	},
-	feedback_delay: 700,
+	feedback_delay: 1500,
 	invalid_input_class: "invalid",
 	error_message_class: "validation_error",
 	form_error_message: "Please fix any errors in the form",
