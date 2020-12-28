@@ -129,7 +129,13 @@
 			border-color: #23bea1;
 		}
 
-		input[type="checkbox"],
+		input[type="checkbox"] {
+			display: inline-block;
+			width: auto;
+			margin: 1em .4em 1em 0;
+			box-shadow: none;
+		}
+
 		input[type="range"] {
 			box-shadow: none;
 		}
@@ -381,7 +387,7 @@
 	</form>
 	<form>
 		<h5>Checkboxes</h5>
-		<input type="checkbox" required> <label>Click this checkbox</label>
+		<label><input type="checkbox" required> Click this checkbox*</label>
 		<input type="submit">
 	</form>
 	<form>
