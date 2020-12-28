@@ -365,14 +365,14 @@
 		<h4>Different Input Types</h4>
 		<p>These validations will work with just about any input type, including...</p>
 		<h5>Ranges</h5>
-		<input validate="min:50" type="range"> 
+		<input validate="min:50" type="range">
 		<p>Value: <span class="range_value">50</span></p>
 		<input type="submit">
 	</form>
 	<form>
 		<h5>Selects</h5>
 		<select validate="max:5">
-			<option>-1</option> 
+			<option>-1</option>
 			<option>4</option>
 			<option>7</option>
 			<option>13</option>
@@ -453,7 +453,7 @@
 
 
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="validin.js"></script>
 	<script>
 		$('form').validin({
@@ -488,7 +488,7 @@
 				.replace(/'/g, "&#039;");
 
 
-			
+
 			if(html.indexOf('option') > 0) {
 
 				html = html.substr(0, html.indexOf("&gt;") + 3);
