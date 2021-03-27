@@ -5,7 +5,7 @@
 * Licensed under MIT.
 * @author Thom Hines
 * https://github.com/thomhines/validin
-* @version 0.1.1
+* @version 0.1.2
 */
 
 var validin_default_options = {
@@ -145,11 +145,12 @@ jQuery.fn.applyValidation = function(user_options) {
 	$form_inputs.keypress(function(e) {
 		$form = jQuery(this).closest('form');
 		$inputs = $form.find(':input');
-		if(e.keyCode == 13) {
+		if(e.keyCode == 13) { // enter key
+			if(vnIsFormValid($form)) return
+
 			e.preventDefault();
 			e.stopPropagation();
-			if(vnIsFormValid($form)) $form.submit();
-			else $form.find(':input[aria-invalid="true"]').first().focus();
+			$form.find(':input[aria-invalid="true"]').first().focus();
 		}
 	});
 
