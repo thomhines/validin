@@ -5,7 +5,7 @@
 * Licensed under MIT.
 * @author Thom Hines
 * https://github.com/thomhines/validin
-* @version 0.1.2
+* @version 0.1.3
 */
 
 var validin_default_options = {
@@ -90,6 +90,7 @@ var validin_default_options = {
 	feedback_delay: 1500,
 	invalid_input_class: "invalid",
 	error_message_class: "validation_error",
+	submit_button_selector: "input[type='submit']",
 	form_error_message: "Please fix any errors in the form",
 	required_fields_initial_error_message: "Please fill in all required fields",
 	required_field_error_message: "This field is required",
@@ -210,6 +211,15 @@ function vnValidateInput($input, run_immediately) {
 
 			if(req_values[0] == 'required') {} // Already handled by code above referring to 'required' attribute
 
+			else if(req_values[0] == 'function') {
+				result = window[req_values[1]]($input.val())
+
+				if(result !== true) {
+					has_error = true;
+					error_message = result;
+				}
+			}
+
 			else if(req_values[0] == 'regex') {
 				var regex_modifiers = "";
 
@@ -312,8 +322,8 @@ function vnAttachMessage($input, message) {
 
 	// Remove error message if no message is present
 	if(message == '' && $input.next().hasClass('validation_error')) {
-		$input.next().fadeOut(400, function() {
-			$input.next().remove();
+		$input.next('.validation_error').fadeOut(400, function() {
+			$input.next('.validation_error').remove();
 		});
 		return;
 	}
@@ -338,7 +348,7 @@ function vnAttachMessage($input, message) {
 // Disables form from being submitted
 function vnDisableParentForm($form) {
 	options = $this_form.data('vn_options');
-	$button = $form.find('button, input[type="submit"]');
+	$button = $form.find(options.submit_button_selector);
 
 	if($form.find(':input[aria-invalid="true"]').length) {
 		setTimeout(function() {

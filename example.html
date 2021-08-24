@@ -255,7 +255,6 @@
 	<h3 id="examples">Examples</h3>
 	<p>Try testing valid and invalid values in each of the forms to see how validin reacts to user input.</p>
 
-
 	<form id="letters_only">
 		<h4>Letters Only</h4>
 		<input validate="alpha" placeholder="eg. hDcaEw">
@@ -326,6 +325,24 @@
 		<h4>Regular Expressions</h4>
 		<input validate="regex:/[0-9a-z]{1,3}-\d+/i" placeholder="eg. 34Z-6 or abc-123">
 		<p>Valid values for the above regular expression follow this pattern:<br>up to three numbers or letters, then a dash, and then any whole number</p>
+		<input type="submit">
+	</form>
+	<script>
+		is_sam = function(field_value) {
+			if(field_value == 'Sam') return true
+			else return false
+		}
+	</script>
+	<form id="function">
+		<h4>Function</h4>
+		<code>
+		<i>// is_sam() function will show valid if field valie is 'Sam', and invalid for anything else</i><br>
+		is_sam = function(field_value) {<br>
+			&nbsp;&nbsp;&nbsp;if(field_value == 'Sam') return true<br>
+			&nbsp;&nbsp;&nbsp;else return false<br>
+		}
+		</code>
+		<input validate="function:is_sam" placeholder="eg. Sam or Jesse">
 		<input type="submit">
 	</form>
 	<form id="minimum_value">

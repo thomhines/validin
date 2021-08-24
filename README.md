@@ -51,6 +51,10 @@ An simple and elegant form validator for jQuery
 
 		<input validate="regex:/[0-9a-z]{1,3}-\d/i">
 
+* **function** - javascript function name. Function argument is field value. return truthy for valid, falsey for invalid
+
+		<input validate="function:function_name">
+
 * **min** - number, no smaller than the value given
 
 		<input validate="min:5">
