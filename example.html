@@ -192,7 +192,7 @@
 	<h2>elegant form validation</h2>
 
 	<div class="header_links">
-		<a href="https://github.com/thomhines/validin">download</a>
+		<a href="https://github.com/thomhines/validin/archive/refs/heads/master.zip">download</a>
 		<a href="https://github.com/thomhines/validin">github</a>
 	</div>
 
@@ -216,8 +216,8 @@
 			<li><a href="#matching_fields">Matching Fields</a></li>
 			<li><a href="#required">Required Fields</a></li>
 			<li><a href="#multiple">Multiple Validations</a></li>
-			<li><a href="#different_types">Different Input Types</a></li>
 		</ul>
+		<p><a href="#different_types">Different Input Types</a></p>
 		<p><a href="#options">Options</a></p>
 		<ul>
 			<li><a href="#custom_validation_tests">Adding Custom Validation Tests</a></li>
@@ -386,8 +386,10 @@
 		<input validate="alpha_num|min_length:2|max_length:5" placeholder="eg. uQ8n" required>
 		<input type="submit">
 	</form>
+
+
 	<form id="different_types">
-		<h4>Different Input Types</h4>
+		<h3>Other Input Types</h3>
 		<p>These validations will work with just about any input type, including...</p>
 		<h5>Ranges</h5>
 		<input validate="min:50" type="range">
@@ -395,7 +397,7 @@
 		<input type="submit">
 	</form>
 	<form>
-		<h5>Selects</h5>
+		<h4>Selects</h4>
 		<select validate="max:5">
 			<option>-1</option>
 			<option>4</option>
@@ -405,18 +407,23 @@
 		<input type="submit">
 	</form>
 	<form>
-		<h5>Checkboxes</h5>
+		<h4>Checkboxes</h4>
 		<label><input type="checkbox" required> Click this checkbox*</label>
 		<input type="submit">
 	</form>
 	<form>
-		<h5>Radio Buttons</h5>
+		<h4>Radio Buttons</h4>
 		<label><input type="radio" name="radio" required> Click this radio button*</label>
 		<input type="submit">
 	</form>
 	<form>
-		<h5>Textareas</h5>
+		<h4>Textareas</h4>
 		<textarea validate="max_length:10" placeholder="This text should be no longer than 10 characters."></textarea>
+		<input type="submit">
+	</form>
+	<form>
+		<h4>Files</h4>
+		<input type="file" accept="image/*" required></input>
 		<input type="submit">
 	</form>
 
