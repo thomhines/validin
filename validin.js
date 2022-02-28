@@ -5,7 +5,7 @@
 * Licensed under MIT.
 * @author Thom Hines
 * https://github.com/thomhines/validin
-* @version 0.1.3
+* @version 0.1.4
 */
 
 var validin_default_options = {
@@ -63,27 +63,27 @@ var validin_default_options = {
 			'error_message': "This needs to be a valid credit card number"
 		},
 		'regex': {
-			'regex': /.*/i,
+			'regex': null,
 			'error_message': "This is not a valid value"
 		},
 		'min': {
-			'regex': /.*/i,
+			'regex': null,
 			'error_message': "This number needs to be at least %i"
 		},
 		'max': {
-			'regex': /.*/i,
+			'regex': null,
 			'error_message': "This number needs to no more than %i"
 		},
 		'min_length': {
-			'regex': /.*/i,
+			'regex': null,
 			'error_message': "This needs to be at least %i characters long"
 		},
 		'max_length': {
-			'regex': /.*/i,
+			'regex': null, // /.*/i,
 			'error_message': "This needs to be no more than %i characters long"
 		},
 		'match': {
-			'regex': /.*/i,
+			'regex': null,
 			'error_message': "These values have to match"
 		}
 	},
@@ -125,7 +125,7 @@ jQuery.fn.applyValidation = function(user_options) {
 	$this_form.addClass('validin')
 	$form_inputs = jQuery(this).find(':input');
 
-	$('[validate*="required"]').attr('required', true);
+	jQuery('[validate*="required"]').attr('required', true);
 
 	vnDisableParentForm(jQuery(this));
 
@@ -152,10 +152,12 @@ jQuery.fn.applyValidation = function(user_options) {
 
 	// Do same when user hits enter key
 	$form_inputs.keypress(function(e) {
-		$form = jQuery(this).closest('form');
-		$inputs = $form.find(':input');
+		var $input = jQuery(this)
+		var $form = jQuery(this).closest('form');
+		var $inputs = $form.find(':input');
 		if(e.keyCode == 13) {
 			if(vnIsFormValid($form)) return
+			if($input.is('textarea')) return
 
 			e.preventDefault();
 			e.stopPropagation();
@@ -168,8 +170,8 @@ jQuery.fn.applyValidation = function(user_options) {
 jQuery.fn.getValue = function() {
 	if(this.is(':checkbox') && this.is(':checked')) return true;
 	else if(this.is(':checkbox') && !this.is(':checked')) return false;
-	else if(this.is(':radio') && $('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return $('input[name="'+this.attr('name')+'"]').filter(':checked').val();
-	else if(this.is(':radio') && !$('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return false;
+	else if(this.is(':radio') && jQuery('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return jQuery('input[name="'+this.attr('name')+'"]').filter(':checked').val();
+	else if(this.is(':radio') && !jQuery('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return false;
 	else if(this.val()) return this.val();
 	return false;
 }
@@ -185,7 +187,7 @@ function vnValidateInput($input, run_immediately) {
 
 	clearTimeout(validation_debounce_timeout);
 
-	if($input.is(':radio')) $input = $('input[name="'+$input.attr('name')+'"]').last(); // Only apply validation to last radio button
+	if($input.is(':radio')) $input = jQuery('input[name="'+$input.attr('name')+'"]').last(); // Only apply validation to last radio button
 
 	// First check if field is required and filled in
 	if($input.attr('required') && !$input.getValue()) {
@@ -268,20 +270,20 @@ function vnValidateInput($input, run_immediately) {
 				error_message = validation_exp.error_message.replace('%i', req_values[1]);
 			}
 
-			else if(req_values[0] == 'match' && $input.val() != $(req_values[1]).val()) {
+			else if(req_values[0] == 'match' && $input.val() != jQuery(req_values[1]).val()) {
 				has_error = true;
-				$(req_values[1]).addClass('match_error');
+				jQuery(req_values[1]).addClass('match_error');
 				error_message = validation_exp.error_message.replace('%i', req_values[1]);
 			}
 
-			else if($input.val().replace(validation_exp.regex, '') != '') {
+			else if(validation_exp.regex && $input.val().replace(validation_exp.regex, '') != '') {
 				has_error = true;
 				error_message = validation_exp.error_message;
 			}
 
 
-			if(req_values[0] == 'match' && $input.val() == $(req_values[1]).val()) {
-				$(req_values[1]).removeClass('match_error');
+			if(req_values[0] == 'match' && $input.val() == jQuery(req_values[1]).val()) {
+				jQuery(req_values[1]).removeClass('match_error');
 			}
 		}
 	}
