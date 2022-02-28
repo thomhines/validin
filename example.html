@@ -129,7 +129,8 @@
 			border-color: #23bea1;
 		}
 
-		input[type="checkbox"] {
+		input[type="checkbox"],
+		input[type="radio"] {
 			display: inline-block;
 			width: auto;
 			margin: 1em .4em 1em 0;
@@ -330,7 +331,7 @@
 	<script>
 		is_sam = function(field_value) {
 			if(field_value == 'Sam') return true
-			else return false
+			else return "Field must be 'Sam'"
 		}
 	</script>
 	<form id="function">
@@ -339,10 +340,11 @@
 		<i>// is_sam() function will show valid if field valie is 'Sam', and invalid for anything else</i><br>
 		is_sam = function(field_value) {<br>
 			&nbsp;&nbsp;&nbsp;if(field_value == 'Sam') return true<br>
-			&nbsp;&nbsp;&nbsp;else return false<br>
+			&nbsp;&nbsp;&nbsp;else return "That's not 'Sam'"<br>
 		}
 		</code>
-		<input validate="function:is_sam" placeholder="eg. Sam or Jesse">
+		<input validate="function:is_sam" placeholder="eg. Sam">
+		<p>Valid value for the above field: <b>Sam</b></p>
 		<input type="submit">
 	</form>
 	<form id="minimum_value">
@@ -408,6 +410,11 @@
 		<input type="submit">
 	</form>
 	<form>
+		<h5>Radio Buttons</h5>
+		<label><input type="radio" name="radio" required> Click this radio button*</label>
+		<input type="submit">
+	</form>
+	<form>
 		<h5>Textareas</h5>
 		<textarea validate="max_length:10" placeholder="This text should be no longer than 10 characters."></textarea>
 		<input type="submit">
@@ -470,7 +477,7 @@
 
 
 	<footer>
-		validin &copy; 2017, Thom Hines
+		validin &copy; 2017-<script>document.write((new Date).getFullYear());</script>, Thom Hines
 	</footer>
 
 

@@ -1,7 +1,7 @@
 /*
 * validin
 * Elegant form validation
-* Copyright (c) 2017 Thom Hines
+* Copyright (c) 2017-2022 Thom Hines
 * Licensed under MIT.
 * @author Thom Hines
 * https://github.com/thomhines/validin
@@ -113,15 +113,23 @@ jQuery.fn.validin = function(user_options) {
 
 jQuery.fn.applyValidation = function(user_options) {
 
-	options = jQuery.extend(validin_default_options, user_options);
-
 	$this_form = jQuery(this);
-	$this_form.data('vn_options', options);
+
+	// Load options, and fallback to defaults set above
+	if($this_form.data('vn_options')) options = $this_form.data('vn_options');
+	else {
+		options = jQuery.extend(validin_default_options, user_options);
+		$this_form.data('vn_options', options);
+	}
+
+	$this_form.addClass('validin')
 	$form_inputs = jQuery(this).find(':input');
 
 	$('[validate*="required"]').attr('required', true);
 
 	vnDisableParentForm(jQuery(this));
+
+	$form_inputs.off('input blur submit')
 
 	// Validate input when it is changed or blurred
 	$form_inputs.on('input blur', function(e) {
@@ -146,7 +154,7 @@ jQuery.fn.applyValidation = function(user_options) {
 	$form_inputs.keypress(function(e) {
 		$form = jQuery(this).closest('form');
 		$inputs = $form.find(':input');
-		if(e.keyCode == 13) { // enter key
+		if(e.keyCode == 13) {
 			if(vnIsFormValid($form)) return
 
 			e.preventDefault();
@@ -171,9 +179,9 @@ jQuery.fn.getValue = function() {
 
 var validation_debounce_timeout;
 function vnValidateInput($input, run_immediately) {
-	has_error = false;
-	error_message = '';
-	options = $this_form.data('vn_options');
+	var has_error = false;
+	var error_message = '';
+	var options = $this_form.data('vn_options');
 
 	clearTimeout(validation_debounce_timeout);
 
@@ -184,7 +192,6 @@ function vnValidateInput($input, run_immediately) {
 		has_error = true;
 		error_message = options.required_field_error_message;
 	}
-
 
 	// Clear error if previously flagged non-required input is empty
 	else if(!$input.attr('required') && $input.val() == ""
@@ -201,15 +208,16 @@ function vnValidateInput($input, run_immediately) {
 
 	// Check against validation test regular expression
 	else {
-		reqs = $input.attr('validate').split('|');
+		var reqs = $input.attr('validate').split('|');
 
 		for(x = 0; x < reqs.length; x++) {
 			req_values = reqs[x].split(':');
 
+			var validation_exp = options.validation_tests[req_values[0]];
 			if(options.custom_tests && options.custom_tests[req_values[0]]) validation_exp = options.custom_tests[req_values[0]];
-			else validation_exp = options.validation_tests[req_values[0]];
 
-			if(req_values[0] == 'required') {} // Already handled by code above referring to 'required' attribute
+			if(error_message) {} // Stop validation checking if there's an error
+			else if(req_values[0] == 'required') {} // Already handled by code above referring to 'required' attribute
 
 			else if(req_values[0] == 'function') {
 				result = window[req_values[1]]($input.val())
@@ -278,20 +286,18 @@ function vnValidateInput($input, run_immediately) {
 		}
 	}
 
-	if(run_immediately) {
+	var attach_message = function() {
 		vnAttachMessage($input, error_message);
 		if(has_error) $input.attr('aria-invalid', "true").addClass(options.invalid_input_class);
 		else $input.attr('aria-invalid', "false").removeClass(options.invalid_input_class);
-		vnDisableParentForm($input.closest('form'));
 	}
-	else {
-		validation_debounce_timeout = setTimeout(function() {
-			vnAttachMessage($input, error_message);
-			if(has_error) $input.attr('aria-invalid', "true").addClass(options.invalid_input_class);
-			else $input.attr('aria-invalid', "false").removeClass(options.invalid_input_class);
-			vnDisableParentForm($input.closest('form'));
-		}, options.feedback_delay);
-	}
+
+	if(run_immediately) attach_message();
+	else validation_debounce_timeout = setTimeout(function() {
+		attach_message();
+	}, options.feedback_delay);
+
+	vnDisableParentForm($input.closest('form'));
 
 	// User callback function
 	if(options.onValidateInput) options.onValidateInput({
@@ -320,6 +326,12 @@ function vnIsFormValid($form) {
 function vnAttachMessage($input, message) {
 	options = $this_form.data('vn_options');
 
+	// Don't refresh message if the message is the same
+	if($input.next().html() == message) {
+		$input.next('.validation_error').stop().fadeIn()
+		return;
+	}
+
 	// Remove error message if no message is present
 	if(message == '' && $input.next().hasClass('validation_error')) {
 		$input.next('.validation_error').fadeOut(400, function() {
@@ -337,8 +349,6 @@ function vnAttachMessage($input, message) {
 		input_margin = parseInt($input.css('margin-bottom'));
 		$input.next().css('margin-top', -input_margin + 5 + "px").css('margin-bottom', input_margin - 5 + "px");
 	}
-
-	if($input.next().html() == message) return;
 
 	$input.next().hide().html(message).fadeIn(400);
 }

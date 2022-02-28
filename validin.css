@@ -1,4 +1,6 @@
 input.invalid,
+textarea.invalid,
+select.invalid,
 .match_error,
 .match_error:focus {
 	border-color: #ff7a7a;
