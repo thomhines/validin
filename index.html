@@ -142,7 +142,6 @@
 		}
 
 		select {
-			height: 40px;
 			background: #fff;
 		}
 
@@ -208,6 +207,7 @@
 			<li><a href="#phone">Phone</a></li>
 			<li><a href="#zip_code">Zip Code</a></li>
 			<li><a href="#credit_card">Credit Card</a></li>
+			<li><a href="#securepassword">Secure Password</a></li>
 			<li><a href="#regular_expressions">Regular Expressions</a></li>
 			<li><a href="#minimum_value">Minimum Value (Assumes Number)</a></li>
 			<li><a href="#maximum_value">Maximum Value (Assumes Number)</a></li>
@@ -254,7 +254,7 @@
 
 
 	<h3 id="examples">Examples</h3>
-	<p>Try testing valid and invalid values in each of the forms to see how validin reacts to user input.</p>
+	<p>Try testing valid and invalid values in each of the forms to see how validin reacts to user input. <i>Note</i>: Forms will be valid even with empty inputs if the field isn't set to 'required'.</p>
 
 	<form id="letters_only">
 		<h4>Letters Only</h4>
@@ -293,7 +293,7 @@
 	</form>
 	<form id="name">
 		<h4>Name Characters Only</h4>
-		<h5>Name charactes assumes all letters, dashes, apostrophes and periods</h5>
+		<h5>Name characters assumes all letters, dashes, apostrophes and periods</h5>
 		<input validate="name" placeholder="eg. Jenny P. O'Leary-Bates">
 		<input type="submit">
 	</form>
@@ -320,6 +320,12 @@
 	<form id="credit_card">
 		<h4>Credit Card</h4>
 		<input validate="creditcard" placeholder="eg. 4019401940194019">
+		<input type="submit">
+	</form>
+	<form id="securepassword">
+		<h4>Secure Password</h4>
+		<h5>Passwords must contain at least one letter, one number and one special character be at least 8 character long</h5>
+		<input validate="securepassword" placeholder="eg. FbE3a$1uR5">
 		<input type="submit">
 	</form>
 	<form id="regular_expressions">
@@ -398,6 +404,7 @@
 	</form>
 	<form>
 		<h4>Selects</h4>
+		<label>Pick a number</label>
 		<select validate="max:5">
 			<option>-1</option>
 			<option>4</option>
