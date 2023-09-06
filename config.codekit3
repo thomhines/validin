@@ -33,12 +33,12 @@
       "oO" : 0,
       "oS" : 1
     },
-    "\/index.html" : {
+    "\/example.html" : {
       "cB" : 0,
       "ft" : 8192,
       "hM" : 0,
       "oA" : 0,
-      "oAP" : "\/index.html",
+      "oAP" : "\/example.html",
       "oF" : 0
     },
     "\/LICENSE" : {
