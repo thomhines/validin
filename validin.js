@@ -5,7 +5,7 @@
 * Licensed under MIT.
 * @author Thom Hines
 * https://github.com/thomhines/validin
-* @version 0.2.0
+* @version 0.2.1
 */
 
 let vn_vars = {
@@ -251,7 +251,7 @@ function vnValidateInput($input, run_immediately) {
 
 				regex_array = req_values;
 
-				regex_array.splice(0, 1); // splicing and rejoing values in case there were any : characters in the regex string
+				regex_array.splice(0, 1); // splicing and rejoining values in case there were any : characters in the regex string
 				regex = regex_array.join(":");
 				if(regex.substr(0, 1) == "/") regex = regex.substr(1);
 				if(regex.lastIndexOf("/") >= regex.length - 3) {
@@ -312,8 +312,8 @@ function vnValidateInput($input, run_immediately) {
 				$(req_values[1]).addClass('match_error');
 				error_message = validation_exp.error_message.replace('%i', req_values[1]);
 			}
-
-			else if($input.val().replace(validation_exp.regex, '') != '') {
+			
+			else if($input.val() && $input.val().replace(validation_exp.regex, '') != '') {
 				has_error = true;
 				error_message = validation_exp.error_message;
 			}
@@ -410,13 +410,6 @@ function vnDisableParentForm($form) {
 		setTimeout(function() {
 			vnAttachMessage($button, options.form_error_message);
 		}, 100);
-		$button.prop('disabled', true);
-		return;
-	}
-
-	// Check to see if all required fields have values
-	if($form.find(':input[required]:visible').filter(function() { return !jQuery(this).getValue(); }).length) {
-		vnAttachMessage($button, options.required_fields_initial_error_message);
 		$button.prop('disabled', true);
 		return;
 	}
