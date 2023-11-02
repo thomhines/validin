@@ -58,6 +58,11 @@
 		h4 {
 			margin: 1em 0 .3em;
 			padding: 2em 0 .6em;
+			color: #00a183;
+		}
+		
+		h5 {
+			margin: 1em 0 .3em;
 		}
 
 		p {
@@ -65,7 +70,7 @@
 		}
 
 		ul {
-			margin: -1em 0 1em;
+			margin: -.4em 0 1em;
 			padding: 0;
 			font-size: .7em;
 			list-style-position: inside;
@@ -166,6 +171,20 @@
 			font-weight: 100;
 			color: #777;
 		}
+		
+		table {
+			margin-bottom: 2em;
+		}
+		
+		td:first-child {
+			padding-right: 40px;
+			font-weight: bold;
+		}
+		
+		td {
+			padding-bottom: 15px;
+			vertical-align: top;
+		}
 
 		footer {
 			margin: 6em 0;
@@ -199,7 +218,8 @@
 
 	<nav>
 		<p><a href="#installation">Installation & Usage</a></p>
-		<p><a href="#examples">Examples</a></p>
+		<p><a href="#examples">Validation Examples</a></p>
+		<h5>Value Tests</h5>
 		<ul>
 			<li><a href="#letters_only">Letters, Numbers and Special Characters</a></li>
 			<li><a href="#email">Email Address</a></li>
@@ -209,15 +229,29 @@
 			<li><a href="#credit_card">Credit Card</a></li>
 			<li><a href="#securepassword">Secure Password</a></li>
 			<li><a href="#regular_expressions">Regular Expressions</a></li>
+			<li><a href="#js_function">Javascript Function</a></li>
+		</ul>
+		<h5>Constraints</h5>
+		<ul>
 			<li><a href="#minimum_value">Minimum Value (Assumes Number)</a></li>
 			<li><a href="#maximum_value">Maximum Value (Assumes Number)</a></li>
-			<li><a href="#minimum_length">Minimum Value Length</a></li>
-			<li><a href="#maximum_length">Maximum Value Length</a></li>
+			<li><a href="#minimum_length">Minimum Length</a></li>
+			<li><a href="#maximum_length">Maximum Length</a></li>
 			<li><a href="#matching_fields">Matching Fields</a></li>
 			<li><a href="#required">Required Fields</a></li>
 			<li><a href="#multiple">Multiple Validations</a></li>
 		</ul>
-		<p><a href="#different_types">Different Input Types</a></p>
+		<p><a href="#different_types">Non-Text Inputs</a></p>
+		
+		<p><a href="#functions">Functions</a></p>
+		<ul>
+			<li><a href="#getValue">getValue()</a></li>
+			<li><a href="#addError">addError()</a></li>
+			<li><a href="#removeError">removeError()</a></li>
+			<li><a href="#validateInput">validateInput()</a></li>
+			<li><a href="#isFormValid">isFormValid()</a></li>
+			<li><a href="#attachMessage">attachMessage()</a></li>
+		</ul>
 		<p><a href="#options">Options</a></p>
 		<ul>
 			<li><a href="#custom_validation_tests">Adding Custom Validation Tests</a></li>
@@ -340,8 +374,8 @@
 			else return "Field must be 'Sam'"
 		}
 	</script>
-	<form id="function">
-		<h4>Function</h4>
+	<form id="js_function">
+		<h4>Javascript Function</h4>
 		<code>
 		<i>// is_sam() function will show valid if field valie is 'Sam', and invalid for anything else</i><br>
 		is_sam = function(field_value) {<br>
@@ -420,7 +454,7 @@
 	</form>
 	<form>
 		<h4>Radio Buttons</h4>
-		<label><input type="radio" name="radio" required> Click this radio button*</label>
+		<label><input type="radio" name="radio" value="1" required> Click this radio button*</label>
 		<input type="submit">
 	</form>
 	<form>
@@ -437,7 +471,100 @@
 
 
 
+	<h3 id="functions">Functions</h3>
+	<p>Below are a number of javascript functions to give you more control over how your forms are validated and operate.</p>
 
+	<h4 id="getValue">getValue()</h4>
+	<p>Similar to jQuery's val() function, it will return the value of an input, but also returns true/false for checkboxes and the correct value whichever radio button is selected in a set.</p>
+	<code>
+		vnGetValue($input)<br>
+		<i>or, with jQuery:</i><br>
+		$input.getValue()
+	</code>
+	<h5>Arguments:</h5>
+	<table>
+		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+	</table>
+	
+	
+	<h4 id="addError">addError()</h4>
+	<p>Attach an error message to an input field and disable form without using a validation test. This is useful for instances where a value is programmatically controlled or needs to be validated elsewhere (e.g. server-side).</p>
+	<p>Note: more than one error can be attached to an input via the addError() function, but only one will be shown at a time.</p>
+	<p>Note: the field will show and error and the form disabled until the error is removed.</p>
+	<code>
+		vnAddError($input, error_id, error_message)<br>
+		<i>or, with jQuery:</i><br>
+		$input.addError(error_id, error_message)
+	</code>
+	<h5>Arguments:</h5>
+	<table>
+		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+		<tr><td>error_id*</td><td>(string) Unique identifier for error to be selectable by removeError()<br>
+			<i>(may only be letters, numbers, hyphens, and underscores)</i></td></tr>
+		<tr><td>error_message*</td><td>(string) error message to be displayed on input</td></tr>
+	</table>
+	
+	
+	<h4 id="removeError">removeError()</h4>
+	<p>Remove an error from an element that was created via addError()</p>
+	<p>Note: the field may still show errors if other validations are unsatisfied</p>
+	<code>
+		vnRemoveError($input, error_id)<br>
+		<i>or, with jQuery:</i><br>
+		$input.removeError(error_id)
+	</code>
+	<h5>Arguments:</h5>
+	<table>
+		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+		<tr><td>error_id*</td><td>(string) Unique identifier for error created previously by addError()<br>
+	</table>
+	
+	
+	<h4 id="validateInput">validateInput()</h4>
+	<p>Returns whether or not a valid is valid. If invalid, it will also display an error message and disable the form</p>
+	<code>
+		vnValidateInput($input, run_immediately)<br>
+		<i>or, with jQuery:</i><br>
+		$input.validateInput(run_immediately)
+	</code>
+	<h5>Arguments:</h5>
+	<table>
+		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+		<tr><td>run_immediately</td><td>(boolean) Whether or not to check if input is valid immediately, rather than wait for the default delay</td></tr>
+	</table>
+	
+	
+	<h4 id="isFormValid">isFormValid()</h4>
+	<p>Returns whether or not (true/false) the given form has any errors</p>
+	<code>
+		vnIsFormValid($form)<br>
+		<i>or, with jQuery:</i><br>
+		$input.isFormValid()
+	</code>
+	<h5>Arguments:</h5>
+	<table>
+		<tr><td>$form*</td><td>(jQuery object) jQuery object for the desired form field</td></tr>
+	</table>
+	
+	
+	<h4 id="attachMessage">attachMessage()</h4>
+	<p>Attach an message to an input element. This will not create an error or disable the form.</p>
+	<p>Note: Message will be cleared the next time the validation is checked on the element</p>
+	<code>
+		vnAttachMessage($input, message)<br>
+		<i>or, with jQuery:</i><br>
+		$input.attachMessage(message)
+	</code>
+	<h5>Arguments:</h5>
+	<table>
+		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+		<tr><td>message*</td><td>(string) error message to be displayed on input</td></tr>
+	</table>
+	
+	
+	
+	
+	
 
 
 	<h3 id="options">Options</h3>
@@ -501,7 +628,6 @@
 	<script src="validin.js"></script>
 	<script>
 		$('form').validin({
-			feedback_delay: 500,
 			custom_tests: {
 				'state_abbreviation': {
 					'regex': /[A-Z]{2}/,

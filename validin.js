@@ -5,7 +5,7 @@
 * Licensed under MIT.
 * @author Thom Hines
 * https://github.com/thomhines/validin
-* @version 0.2.1
+* @version 0.2.3
 */
 
 let vn_vars = {
@@ -142,7 +142,7 @@ jQuery.fn.applyValidation = function(user_options) {
 	
 	$(':input[required]').attr('aria-required', true);
 
-	vnDisableParentForm($(this));
+	vnDisableForm($(this));
 
 	$form_inputs.off('input blur submit')
 
@@ -171,7 +171,7 @@ jQuery.fn.applyValidation = function(user_options) {
 		$inputs = $form.find(':input:visible');
 		if(e.keyCode == 13) {
 			if(vnIsFormValid($form)) return
-			if($input.is('textarea')) return // Don't submit form on Enter inside of textareas
+			if($(this).is('textarea')) return // Don't submit form on Enter inside of textareas
 
 			e.preventDefault();
 			e.stopPropagation();
@@ -181,17 +181,38 @@ jQuery.fn.applyValidation = function(user_options) {
 
 }
 
-jQuery.fn.getValue = function() {
+// Return a usable value for any kind of input element
+vnGetValue = function($input) {
 	let $ = jQuery;
-	if(this.is(':checkbox') && this.is(':checked')) return true;
-	else if(this.is(':checkbox') && !this.is(':checked')) return false;
-	else if(this.is(':radio') && $('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return $('input[name="'+this.attr('name')+'"]').filter(':checked').val();
-	else if(this.is(':radio') && !$('input[name="'+this.attr('name')+'"]').filter(':checked').val()) return false;
-	else if(this.val()) return this.val();
-	return false;
+	if($input.is(':checkbox') && $input.is(':checked')) return true;
+	else if($input.is(':checkbox') && !$input.is(':checked')) return false;
+	else if($input.is(':radio') && $('input[name="'+$input.attr('name')+'"]').filter(':checked').val()) return $('input[name="'+$input.attr('name')+'"]').filter(':checked').val();
+	else if($input.is(':radio') && !$('input[name="'+$input.attr('name')+'"]').filter(':checked').val()) return false;
+	else if($input.val()) return $input.val();
+	return false;	
+}
+// jQuery version
+jQuery.fn.getValue = function() {
+	return vnGetValue(this)
 }
 
+// Attach an error to an element without validation
+vnAddError = function($input, error_id, error_message) {
+	$input.attr('validation-error-'+error_id, error_message)
+}
+// jQuery version
+jQuery.fn.addError = function(error_id, error_message) {
+	vnAddError(this, error_id, error_message)
+}
 
+// Remove an error from an element that was created via addError()
+vnRemoveError = function($input, error_id) {
+	$input.removeAttr('validation-error-'+error_id)
+}
+// jQuery version
+jQuery.fn.removeError = function(error_id) {
+	vnRemoveError(this, error_id)
+}
 
 
 var validation_debounce_timeout;
@@ -205,7 +226,15 @@ function vnValidateInput($input, run_immediately) {
 
 	if($input.is(':radio')) $input = $('input[name="'+$input.attr('name')+'"]').last(); // Only apply validation to last radio button
 
-	// First check if field is required and filled in
+	// Check to see if error was manually applied via vnAddError()
+	for(attr of $input[0].attributes) {
+		if(attr.name.includes('validation-error')) {
+			has_error = true;
+			error_message = attr.value;	
+		}
+	}
+
+	// Check if field is required and filled in
 	if($input.attr('required') && !$input.getValue()) {
 		has_error = true;
 		error_message = options.required_field_error_message;
@@ -335,9 +364,10 @@ function vnValidateInput($input, run_immediately) {
 	if(run_immediately) attach_message();
 	else validation_debounce_timeout = setTimeout(function() {
 		attach_message();
+		vnDisableForm($input.closest('form'));
 	}, options.feedback_delay);
 
-	vnDisableParentForm($input.closest('form'));
+	vnDisableForm($input.closest('form'));
 
 	// User callback function
 	if(options.onValidateInput) options.onValidateInput({
@@ -347,6 +377,10 @@ function vnValidateInput($input, run_immediately) {
 	});
 
 	return !has_error;
+}
+// jQuery version
+jQuery.fn.validateInput = function(run_immediately) {
+	return vnValidateInput(this, run_immediately)
 }
 
 
@@ -361,13 +395,17 @@ function vnIsFormValid($form) {
 
 	return is_valid;
 }
-
+// jQuery version
+jQuery.fn.isFormValid = function() {
+	return isFormValid(this)
+}
 
 // Attaches message to input field
 function vnAttachMessage($input, message) {
 	let options = vn_vars.this_form.data('vn_options');
 	
 	let $anchor = $input;
+	// Attach message to label tag instead if input is inside a label
 	if($input.parent().is('label')) $anchor = $input.parent();
 	
 	let $error_message = $anchor.next('.' + options.error_message_class);
@@ -399,11 +437,15 @@ function vnAttachMessage($input, message) {
 
 	$error_message.hide().html(message).fadeIn(400);
 }
+// jQuery version
+jQuery.fn.attachMessage = function(message) {
+	attachMessage(this, message)
+}
 
 
 
 // Disables form from being submitted
-function vnDisableParentForm($form) {
+function vnDisableForm($form) {
 	let options = vn_vars.this_form.data('vn_options');
 	let $button = $form.find(options.submit_button_selector);
 
@@ -424,4 +466,8 @@ function vnDisableParentForm($form) {
 
 	vnAttachMessage($button, '');
 	$button.prop('disabled', false);
+}
+// jQuery version
+jQuery.fn.disableForm = function() {
+	vnDisableForm(this)
 }
