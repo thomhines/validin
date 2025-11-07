@@ -4,19 +4,56 @@
 <head>
 	<title>validin | elegant form validation</title>
 	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="validin is a jQuery plugin that makes form validation elegant and simple." />
+	<meta name="author" content="Thom Hines" />
+	<meta name="keywords" content="validin, form validation, jquery, javascript, forms, validation, plugin" />
 	<link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
 	<link rel="Stylesheet" href="validin.css" type="text/css" media="all" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 	<style>
 		* {
 			box-sizing: border-box;
 		}
 
+		html, body {
+			color: #222;
+			font-family: 'Lato', helvetica, arial, sans-serif;
+			font-size: 14px;
+		}
+
 		body {
 			width: 90%;
-			max-width: 600px;
 			margin: 80px auto;
-			color: #222;
-			font-family: 'Lato', 'Open Sans', helvetica, arial, sans-serif;
+			max-width: 600px;
+		}
+
+		.toc {
+			position: static;
+			width: auto;
+			overflow: visible;
+			padding: initial;
+			box-shadow: none;
+		}
+
+		.content {
+			padding: 0;
+		}
+
+		.try_it_out {
+			margin: 4em 0;
+			padding: 0 2em 1em;
+			background: #dffff9;
+		}
+
+		.try_it_out label {
+			display: block;
+			margin-bottom: 1.3em;
+		}
+
+		.try_it_out input {
+			width: 100%;
 		}
 
 		.header_links {
@@ -62,7 +99,8 @@
 		}
 		
 		h5 {
-			margin: 1em 0 .3em;
+			margin: 1em 0 .6em;
+			text-transform: uppercase;
 		}
 
 		p {
@@ -72,7 +110,6 @@
 		ul {
 			margin: -.4em 0 1em;
 			padding: 0;
-			font-size: .7em;
 			list-style-position: inside;
 			color: #147160;
 		}
@@ -83,10 +120,6 @@
 
 		nav {
 			margin: 3em 0;
-		}
-
-		nav a {
-			font-size: 1.3em;
 		}
 
 		input,
@@ -163,6 +196,7 @@
 			background: #e6e6e6;
 			color: #333;
 			font-weight: 600;
+			font-size: 1rem;
 			overflow-x: auto;
 			white-space: nowrap;
 		}
@@ -196,431 +230,488 @@
 		input:-moz-placeholder { color: #ccc; }
 
 
+		/* Two-column layout: fixed, scrollable left header on wide screens */
+		@media (min-width: 1200px) {
+			:root { --sidebar-width: 25%; }
+
+			/* make header a fixed left column and allow internal vertical scrolling */
+			.toc {
+				position: fixed;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				width: var(--sidebar-width);
+				max-width: 26rem;
+				overflow-y: auto;
+				-webkit-overflow-scrolling: touch;
+				padding: 40px;
+				background: #fff; /* keep background to separate columns */
+				box-shadow: 2px 0 6px rgba(0,0,0,0.08);
+			}
+
+			/* push the page content to the right of the fixed sidebar */
+			body {
+				margin-left: var(--sidebar-width);
+				width: auto;
+				max-width: none;
+				margin-top: 0;
+			}
+
+			/* content column styling */
+			.content {
+				padding: 40px;
+				max-width: 50em;
+			}
+		}
 	</style>
 </head>
 
 
-
-
-
-
 <body>
 
-	<h1>validin</h1>
-	<h2>elegant form validation</h2>
+	<div class="toc">
+		<h1>validin</h1>
+		<h2>elegant form validation</h2>
 
-	<div class="header_links">
-		<a href="https://github.com/thomhines/validin/archive/refs/heads/master.zip">download</a>
-		<a href="https://github.com/thomhines/validin">github</a>
+		<p>Validin tries to take the headache out of form validation by making things simple and keeping your markup clean. <b>Dependencies</b>: Just <a href="https://jquery.com/">jQuery</a>.</p>
+
+		<nav>
+			<p><b><a href="#installation">Installation & Usage</a></b></p>
+			<p><b><a href="#examples">Validation Examples</a></b></p>
+			<h5>Value Tests</h5>
+			<ul>
+				<li><a href="#letters_only">Letters, Numbers and Special Characters</a></li>
+				<li><a href="#email">Email Address</a></li>
+				<li><a href="#url">URL</a></li>
+				<li><a href="#phone">Phone</a></li>
+				<li><a href="#zip_code">Zip Code</a></li>
+				<li><a href="#credit_card">Credit Card</a></li>
+				<li><a href="#securepassword">Secure Password</a></li>
+				<li><a href="#regular_expressions">Regular Expressions</a></li>
+				<li><a href="#js_function">Javascript Function</a></li>
+			</ul>
+			<h5>Constraints</h5>
+			<ul>
+				<li><a href="#minimum_value">Minimum Value (Assumes Number)</a></li>
+				<li><a href="#maximum_value">Maximum Value (Assumes Number)</a></li>
+				<li><a href="#minimum_length">Minimum Length</a></li>
+				<li><a href="#maximum_length">Maximum Length</a></li>
+				<li><a href="#matching_fields">Matching Fields</a></li>
+				<li><a href="#required">Required Fields</a></li>
+				<li><a href="#multiple">Multiple Validations</a></li>
+			</ul>
+			<p><b><a href="#different_types">Non-Text Inputs</a></b></p>
+			
+			<p><b><a href="#functions">Functions</a></b></p>
+			<ul>
+				<li><a href="#getValue">getValue()</a></li>
+				<li><a href="#addError">addError()</a></li>
+				<li><a href="#removeError">removeError()</a></li>
+				<li><a href="#validateInput">validateInput()</a></li>
+				<li><a href="#isFormValid">isFormValid()</a></li>
+				<li><a href="#attachMessage">attachMessage()</a></li>
+			</ul>
+			<p><b><a href="#options">Options</a></b></p>
+			<ul>
+				<li><a href="#custom_validation_tests">Adding Custom Validation Tests</a></li>
+			</ul>
+			<p><b><a href="LICENSE">License</a></b></p>
+		</nav>
 	</div>
+	<div class="content">
 
-	<p>Validin tries to take the headache out of form validation by making things simple and keeping your markup clean. <b>Dependencies</b>: Just <a href="https://jquery.com/">jQuery</a>.</p>
+		<h3>Try it Out</h3>
+		<p>Below is a fake sign up form that uses validin to validate a few different kinds of fields. Try entering valid and invalid values to see how validin reacts to user input.</p>
+		<div class="try_it_out">
+			<form id="number">
 
-	<nav>
-		<p><a href="#installation">Installation & Usage</a></p>
-		<p><a href="#examples">Validation Examples</a></p>
-		<h5>Value Tests</h5>
-		<ul>
-			<li><a href="#letters_only">Letters, Numbers and Special Characters</a></li>
-			<li><a href="#email">Email Address</a></li>
-			<li><a href="#url">URL</a></li>
-			<li><a href="#phone">Phone</a></li>
-			<li><a href="#zip_code">Zip Code</a></li>
-			<li><a href="#credit_card">Credit Card</a></li>
-			<li><a href="#securepassword">Secure Password</a></li>
-			<li><a href="#regular_expressions">Regular Expressions</a></li>
-			<li><a href="#js_function">Javascript Function</a></li>
-		</ul>
-		<h5>Constraints</h5>
-		<ul>
-			<li><a href="#minimum_value">Minimum Value (Assumes Number)</a></li>
-			<li><a href="#maximum_value">Maximum Value (Assumes Number)</a></li>
-			<li><a href="#minimum_length">Minimum Length</a></li>
-			<li><a href="#maximum_length">Maximum Length</a></li>
-			<li><a href="#matching_fields">Matching Fields</a></li>
-			<li><a href="#required">Required Fields</a></li>
-			<li><a href="#multiple">Multiple Validations</a></li>
-		</ul>
-		<p><a href="#different_types">Non-Text Inputs</a></p>
-		
-		<p><a href="#functions">Functions</a></p>
-		<ul>
-			<li><a href="#getValue">getValue()</a></li>
-			<li><a href="#addError">addError()</a></li>
-			<li><a href="#removeError">removeError()</a></li>
-			<li><a href="#validateInput">validateInput()</a></li>
-			<li><a href="#isFormValid">isFormValid()</a></li>
-			<li><a href="#attachMessage">attachMessage()</a></li>
-		</ul>
-		<p><a href="#options">Options</a></p>
-		<ul>
-			<li><a href="#custom_validation_tests">Adding Custom Validation Tests</a></li>
-		</ul>
-		<p><a href="LICENSE">License</a></p>
-	</nav>
+				<h4>Fake Sign Up Form</h4>
+				<p><i>This form isn't connected to anything and doesn't submit.</i></p>
+				<label>
+					Name*
+					<input validate="name" placeholder="eg. Jenny P. O'Leary-Bates" required>
+				</label>
+				<label>
+					Email*
+					<input validate="email" required>
+				</label>
+				<label>
+					Pick a number between 5 and 10*
+					<input validate="number|min:5|max:10" required>
+				</label>
+				<label>
+					<input type="checkbox" required> You must check this
+				</label>
+				<input type="submit">
+			</form>
+		</div>
 
-
-
-	<h3 id="installation">Installation & Usage</h3>
-	<p>First, link to <b>jQuery</b> and <b>validin</b> in your HTML:</p>
-	<code>
-		<i>&lt;!-- validin styles: --></i><br>
-		&lt;link rel="Stylesheet" href="validin.css" type="text/css" /><br>
-		<i>&lt;!-- jQuery: --></i><br>
-		&lt;script src="https://code.jquery.com/jquery-3.3.1.min.js">&lt;/script><br>
-		<i>&lt;!-- validin scripts: --></i><br>
-		&lt;script src="validin.js">&lt;/script><br>
-	</code>
-
-	<p>Then activate it on your forms:</p>
-	<code>
-		<i>// You can enable validin on all forms in your page:</i><br>
-		$(window).validin();<br>
-		<br>
-		<i>// Or just a specific form:</i><br>
-		$('.form1').validin();<br>
-	</code>
-
-	<p>Lastly, add 'validate' attributes to all of the input fields that need validation:</p>
-	<code>
-		&lt;input <b>validate="number"</b>>
-	</code>
-
-
-	<h3 id="examples">Examples</h3>
-	<p>Try testing valid and invalid values in each of the forms to see how validin reacts to user input. <i>Note</i>: Forms will be valid even with empty inputs if the field isn't set to 'required'.</p>
-
-	<form id="letters_only">
-		<h4>Letters Only</h4>
-		<input validate="alpha" placeholder="eg. hDcaEw">
-		<input type="submit">
-	</form>
-	<form id="letters_numbers">
-		<h4>Letters and Numbers</h4>
-		<input validate="alpha_num" placeholder="eg. nrR33sB">
-		<input type="submit">
-	</form>
-	<form id="letters_spaces">
-		<h4>Letters and Spaces</h4>
-		<input validate="alpha_space" placeholder="eg. Hwg sWK ifO">
-		<input type="submit">
-	</form>
-	<form id="alpha_dash">
-		<h4>Letters, Dashes and Underscores</h4>
-		<input validate="alpha_dash" placeholder="eg. vLe-rP_z">
-		<input type="submit">
-	</form>
-	<form id="alpha_num_dash">
-		<h4>Letters, Numbers, Dashes and Underscores</h4>
-		<input validate="alpha_num_dash" placeholder="eg. l4_7Jv-55">
-		<input type="submit">
-	</form>
-	<form id="number">
-		<h4>Whole Numbers</h4>
-		<input validate="number" placeholder="eg. 9372">
-		<input type="submit">
-	</form>
-	<form id="decimal">
-		<h4>Numbers (Decimals Allowed)</h4>
-		<input validate="decimal" placeholder="eg. 839.20">
-		<input type="submit">
-	</form>
-	<form id="name">
-		<h4>Name Characters Only</h4>
-		<h5>Name characters assumes all letters, dashes, apostrophes and periods</h5>
-		<input validate="name" placeholder="eg. Jenny P. O'Leary-Bates">
-		<input type="submit">
-	</form>
-	<form id="email">
-		<h4>Email</h4>
-		<input validate="email" placeholder="eg. example@website.com">
-		<input type="submit">
-	</form>
-	<form id="url">
-		<h4>URL</h4>
-		<input validate="url" placeholder="eg. http://anysite.com/">
-		<input type="submit">
-	</form>
-	<form id="phone">
-		<h4>Phone</h4>
-		<input validate="phone" placeholder="eg. 681-555-4980">
-		<input type="submit">
-	</form>
-	<form id="zip_code">
-		<h4>Zip Code (US)</h4>
-		<input validate="zip" placeholder="eg. 82348 or 92062-3452">
-		<input type="submit">
-	</form>
-	<form id="credit_card">
-		<h4>Credit Card</h4>
-		<input validate="creditcard" placeholder="eg. 4019401940194019">
-		<input type="submit">
-	</form>
-	<form id="securepassword">
-		<h4>Secure Password</h4>
-		<h5>Passwords must contain at least one letter, one number and one special character be at least 8 character long</h5>
-		<input validate="securepassword" placeholder="eg. FbE3a$1uR5">
-		<input type="submit">
-	</form>
-	<form id="regular_expressions">
-		<h4>Regular Expressions</h4>
-		<input validate="regex:/[0-9a-z]{3}-\d+/i" placeholder="eg. 34Z-6 or ABC-123">
-		<p>Valid values for the above regular expression follow this pattern:<br>up to three numbers or letters, then a dash, and then any whole number</p>
-		<input type="submit">
-	</form>
-	<script>
-		is_sam = function(field_value) {
-			if(field_value == 'Sam') return true
-			else return "Field must be 'Sam'"
-		}
-	</script>
-	<form id="js_function">
-		<h4>Javascript Function</h4>
+		<h3 id="installation">Installation & Usage</h3>
+		<p>First, link to <b>jQuery</b> and <b>validin</b> in your HTML:</p>
 		<code>
-		<i>// is_sam() function will show valid if field valie is 'Sam', and invalid for anything else</i><br>
-		is_sam = function(field_value) {<br>
-			&nbsp;&nbsp;&nbsp;if(field_value == 'Sam') return true<br>
-			&nbsp;&nbsp;&nbsp;else return "That's not 'Sam'"<br>
-		}
+			<i>&lt;!-- validin styles: --></i><br>
+			&lt;link rel="Stylesheet" href="validin.css" type="text/css" /><br>
+			<i>&lt;!-- jQuery: --></i><br>
+			&lt;script src="https://code.jquery.com/jquery-3.3.1.min.js">&lt;/script><br>
+			<i>&lt;!-- validin scripts: --></i><br>
+			&lt;script src="validin.js">&lt;/script><br>
 		</code>
-		<input validate="function:is_sam" placeholder="eg. Sam">
-		<p>Valid value for the above field: <b>Sam</b></p>
-		<input type="submit">
-	</form>
-	<form id="minimum_value">
-		<h4>Minimum Value (Assumes Number)</h4>
-		<input validate="min:5" placeholder="eg. 42">
-		<input type="submit">
-	</form>
-	<form id="maximum_value">
-		<h4>Maximum Value (Assumes Number)</h4>
-		<input validate="max:5" placeholder="eg. -7">
-		<input type="submit">
-	</form>
-	<form id="minimum_length">
-		<h4>Minimum Value Length</h4>
-		<input validate="min_length:5" placeholder="eg. Eo7j1Y">
-		<input type="submit">
-	</form>
-	<form id="maximum_length">
-		<h4>Maximum Value Length</h4>
-		<input validate="max_length:5" placeholder="eg. i3Ox">
-		<input type="submit">
-	</form>
-	<form id="matching_fields">
-		<h4>Matching Fields</h4>
-		<p>These two fields need to match:</p>
-		<input class="must_match">
-		<input validate="match:.must_match">
-		<input type="submit">
-	</form>
-	<form id="required">
-		<h4>Required</h4>
-		<p>Making a field required can be done using the 'required' attribute as below (which conforms to web and accessibility standards) or using the 'required' validation setting (eg. "validate='required'").</p>
-		<input required placeholder="[any value]">
-		<input type="submit">
-	</form>
-	<form id="multiple">
-		<h4>Multiple Validations</h4>
-		<p>You can apply more than one validation per field by separating each requirement with the "|" character.</p>
-		<input validate="alpha_num|min_length:2|max_length:5" placeholder="eg. uQ8n" required>
-		<input type="submit">
-	</form>
+
+		<p>Then activate it on your forms:</p>
+		<code>
+			<i>// You can enable validin on all forms in your page:</i><br>
+			$(window).validin();<br>
+			<br>
+			<i>// Or just a specific form:</i><br>
+			$('.form1').validin();<br>
+		</code>
+
+		<p>Lastly, add 'validate' attributes to all of the input fields that need validation:</p>
+		<code>
+			&lt;input <b>validate="number"</b>>
+		</code>
 
 
-	<form id="different_types">
-		<h3>Other Input Types</h3>
-		<p>These validations will work with just about any input type, including...</p>
-		<h5>Ranges</h5>
-		<input validate="min:50" type="range">
-		<p>Value: <span class="range_value">50</span></p>
-		<input type="submit">
-	</form>
-	<form>
-		<h4>Selects</h4>
-		<label>Pick a number</label>
-		<select validate="max:5">
-			<option>-1</option>
-			<option>4</option>
-			<option>7</option>
-			<option>13</option>
-		</select>
-		<input type="submit">
-	</form>
-	<form>
-		<h4>Checkboxes</h4>
-		<label><input type="checkbox" required> Click this checkbox*</label>
-		<input type="submit">
-	</form>
-	<form>
-		<h4>Radio Buttons</h4>
-		<label><input type="radio" name="radio" value="1" required> Click this radio button*</label>
-		<input type="submit">
-	</form>
-	<form>
-		<h4>Textareas</h4>
-		<textarea validate="max_length:10" placeholder="This text should be no longer than 10 characters."></textarea>
-		<input type="submit">
-	</form>
-	<form>
-		<h4>Files</h4>
-		<input type="file" accept="image/*" required></input>
-		<input type="submit">
-	</form>
+		<div class="header_links">
+			<a href="https://github.com/thomhines/validin/archive/refs/heads/master.zip">download</a>
+			<a href="https://github.com/thomhines/validin">github</a>
+		</div>
 
 
+		<h3 id="examples">Examples</h3>
+		<p>Try testing valid and invalid values in each of the forms to see how validin reacts to user input. <i>Note</i>: Forms will be valid even with empty inputs if the field isn't set to 'required'.</p>
+
+		<form id="letters_only">
+			<h4>Letters Only</h4>
+			<input validate="alpha" placeholder="eg. hDcaEw">
+			<input type="submit">
+		</form>
+		<form id="letters_numbers">
+			<h4>Letters and Numbers</h4>
+			<input validate="alpha_num" placeholder="eg. nrR33sB">
+			<input type="submit">
+		</form>
+		<form id="letters_spaces">
+			<h4>Letters and Spaces</h4>
+			<input validate="alpha_space" placeholder="eg. Hwg sWK ifO">
+			<input type="submit">
+		</form>
+		<form id="alpha_dash">
+			<h4>Letters, Dashes and Underscores</h4>
+			<input validate="alpha_dash" placeholder="eg. vLe-rP_z">
+			<input type="submit">
+		</form>
+		<form id="alpha_num_dash">
+			<h4>Letters, Numbers, Dashes and Underscores</h4>
+			<input validate="alpha_num_dash" placeholder="eg. l4_7Jv-55">
+			<input type="submit">
+		</form>
+		<form id="number">
+			<h4>Whole Numbers</h4>
+			<input validate="number" placeholder="eg. 9372">
+			<input type="submit">
+		</form>
+		<form id="decimal">
+			<h4>Numbers (Decimals Allowed)</h4>
+			<input validate="decimal" placeholder="eg. 839.20">
+			<input type="submit">
+		</form>
+		<form id="name">
+			<h4>Name Characters Only</h4>
+			<h5>Name characters assumes all letters, dashes, apostrophes and periods</h5>
+			<input validate="name" placeholder="eg. Jenny P. O'Leary-Bates">
+			<input type="submit">
+		</form>
+		<form id="email">
+			<h4>Email</h4>
+			<input validate="email" placeholder="eg. example@website.com">
+			<input type="submit">
+		</form>
+		<form id="url">
+			<h4>URL</h4>
+			<input validate="url" placeholder="eg. http://anysite.com/">
+			<input type="submit">
+		</form>
+		<form id="phone">
+			<h4>Phone</h4>
+			<input validate="phone" placeholder="eg. 681-555-4980">
+			<input type="submit">
+		</form>
+		<form id="zip_code">
+			<h4>Zip Code (US)</h4>
+			<input validate="zip" placeholder="eg. 82348 or 92062-3452">
+			<input type="submit">
+		</form>
+		<form id="credit_card">
+			<h4>Credit Card</h4>
+			<input validate="creditcard" placeholder="eg. 4019401940194019">
+			<input type="submit">
+		</form>
+		<form id="securepassword">
+			<h4>Secure Password</h4>
+			<h5>Passwords must contain at least one letter, one number and one special character be at least 8 character long</h5>
+			<input validate="securepassword" placeholder="eg. FbE3a$1uR5">
+			<input type="submit">
+		</form>
+		<form id="regular_expressions">
+			<h4>Regular Expressions</h4>
+			<input validate="regex:/[0-9a-z]{3}-\d+/i" placeholder="eg. 34Z-6 or ABC-123">
+			<p>Valid values for the above regular expression follow this pattern:<br>up to three numbers or letters, then a dash, and then any whole number</p>
+			<input type="submit">
+		</form>
+		<script>
+			is_sam = function(field_value) {
+				if(field_value == 'Sam') return true
+				else return "Field must be 'Sam'"
+			}
+		</script>
+		<form id="js_function">
+			<h4>Javascript Function</h4>
+			<code>
+			<i>// is_sam() function will show valid if field valie is 'Sam', and invalid for anything else</i><br>
+			is_sam = function(field_value) {<br>
+				&nbsp;&nbsp;&nbsp;if(field_value == 'Sam') return true<br>
+				&nbsp;&nbsp;&nbsp;else return "That's not 'Sam'"<br>
+			}
+			</code>
+			<input validate="function:is_sam" placeholder="eg. Sam">
+			<p>Valid value for the above field: <b>Sam</b></p>
+			<input type="submit">
+		</form>
+		<form id="minimum_value">
+			<h4>Minimum Value (Assumes Number)</h4>
+			<input validate="min:5" placeholder="eg. 42">
+			<input type="submit">
+		</form>
+		<form id="maximum_value">
+			<h4>Maximum Value (Assumes Number)</h4>
+			<input validate="max:5" placeholder="eg. -7">
+			<input type="submit">
+		</form>
+		<form id="minimum_length">
+			<h4>Minimum Value Length</h4>
+			<input validate="min_length:5" placeholder="eg. Eo7j1Y">
+			<input type="submit">
+		</form>
+		<form id="maximum_length">
+			<h4>Maximum Value Length</h4>
+			<input validate="max_length:5" placeholder="eg. i3Ox">
+			<input type="submit">
+		</form>
+		<form id="matching_fields">
+			<h4>Matching Fields</h4>
+			<p>These two fields need to match:</p>
+			<input class="must_match">
+			<input validate="match:.must_match">
+			<input type="submit">
+		</form>
+		<form id="required">
+			<h4>Required</h4>
+			<p>Making a field required can be done using the 'required' attribute as below (which conforms to web and accessibility standards) or using the 'required' validation setting (eg. "validate='required'").</p>
+			<input required placeholder="[any value]">
+			<input type="submit">
+		</form>
+		<form id="multiple">
+			<h4>Multiple Validations</h4>
+			<p>You can apply more than one validation per field by separating each requirement with the "|" character.</p>
+			<input validate="alpha_num|min_length:2|max_length:5" placeholder="eg. uQ8n" required>
+			<input type="submit">
+		</form>
 
 
-	<h3 id="functions">Functions</h3>
-	<p>Below are a number of javascript functions to give you more control over how your forms are validated and operate.</p>
-
-	<h4 id="getValue">getValue()</h4>
-	<p>Similar to jQuery's val() function, it will return the value of an input, but also returns true/false for checkboxes and the correct value whichever radio button is selected in a set.</p>
-	<code>
-		vnGetValue($input)<br>
-		<i>or, with jQuery:</i><br>
-		$input.getValue()
-	</code>
-	<h5>Arguments:</h5>
-	<table>
-		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
-	</table>
-	
-	
-	<h4 id="addError">addError()</h4>
-	<p>Attach an error message to an input field and disable form without using a validation test. This is useful for instances where a value is programmatically controlled or needs to be validated elsewhere (e.g. server-side).</p>
-	<p>Note: more than one error can be attached to an input via the addError() function, but only one will be shown at a time.</p>
-	<p>Note: the field will show and error and the form disabled until the error is removed.</p>
-	<code>
-		vnAddError($input, error_id, error_message)<br>
-		<i>or, with jQuery:</i><br>
-		$input.addError(error_id, error_message)
-	</code>
-	<h5>Arguments:</h5>
-	<table>
-		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
-		<tr><td>error_id*</td><td>(string) Unique identifier for error to be selectable by removeError()<br>
-			<i>(may only be letters, numbers, hyphens, and underscores)</i></td></tr>
-		<tr><td>error_message*</td><td>(string) error message to be displayed on input</td></tr>
-	</table>
-	
-	
-	<h4 id="removeError">removeError()</h4>
-	<p>Remove an error from an element that was created via addError()</p>
-	<p>Note: the field may still show errors if other validations are unsatisfied</p>
-	<code>
-		vnRemoveError($input, error_id)<br>
-		<i>or, with jQuery:</i><br>
-		$input.removeError(error_id)
-	</code>
-	<h5>Arguments:</h5>
-	<table>
-		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
-		<tr><td>error_id*</td><td>(string) Unique identifier for error created previously by addError()<br>
-	</table>
-	
-	
-	<h4 id="validateInput">validateInput()</h4>
-	<p>Returns whether or not a valid is valid. If invalid, it will also display an error message and disable the form</p>
-	<code>
-		vnValidateInput($input, run_immediately)<br>
-		<i>or, with jQuery:</i><br>
-		$input.validateInput(run_immediately)
-	</code>
-	<h5>Arguments:</h5>
-	<table>
-		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
-		<tr><td>run_immediately</td><td>(boolean) Whether or not to check if input is valid immediately, rather than wait for the default delay</td></tr>
-	</table>
-	
-	
-	<h4 id="isFormValid">isFormValid()</h4>
-	<p>Returns whether or not (true/false) the given form has any errors</p>
-	<code>
-		vnIsFormValid($form)<br>
-		<i>or, with jQuery:</i><br>
-		$input.isFormValid()
-	</code>
-	<h5>Arguments:</h5>
-	<table>
-		<tr><td>$form*</td><td>(jQuery object) jQuery object for the desired form field</td></tr>
-	</table>
-	
-	
-	<h4 id="attachMessage">attachMessage()</h4>
-	<p>Attach an message to an input element. This will not create an error or disable the form.</p>
-	<p>Note: Message will be cleared the next time the validation is checked on the element</p>
-	<code>
-		vnAttachMessage($input, message)<br>
-		<i>or, with jQuery:</i><br>
-		$input.attachMessage(message)
-	</code>
-	<h5>Arguments:</h5>
-	<table>
-		<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
-		<tr><td>message*</td><td>(string) error message to be displayed on input</td></tr>
-	</table>
-	
-	
-	
-	
-	
-
-
-	<h3 id="options">Options</h3>
-	<p>Validin comes pretty much perfect right out of the box, but there are some ways to customize it's behavior. You can add options to the validin() function like so:</p>
-	<code>
-		options = {<br>
-			&nbsp;&nbsp;feedback_delay: 1000,<br>
-			&nbsp;&nbsp;invalid_input_class: "bad_input"<br>
-		};<br>
-		<br>
-		$(window).validin(options);
-	</code>
-
-	<p>Here are the available settings and their defaults:</p>
-
-	<code>
-		feedback_delay: 700, <i>// Number of ms after input before testing validity</i><br>
-		invalid_input_class: "invalid", <i>// Class name added to invalid inputs</i><br>
-		error_message_class: "validation_error", <i>// Class name added to forms with validation errors</i><br>
-		form_error_message: "Please fix any errors in the form", <i>// The message that appears at the bottom of a form if there are any errors present</i><br>
-		required_fields_initial_error_message: "Please fill in all required fields", <i>// Initial message showing why form is disabled if there are required fields but no errors</i><br>
-		required_field_error_message: "This field is required", <i>// Message shown next to required fields that are not filled in AFTER field has lost focus</i><br>
-		custom_tests: [] <i>// Array of custom validation tests (see below)</i>
-	</code>
-
-	<h4 id="custom_validation_tests">Adding Custom Validation Tests</h4>
-	<p>There are a bunch of validation tests already built into validin, but you can make your own with the 'tests' option. Custom validation tests follow this syntax:</p>
-	<code>
-		'validation_name': {<br>
-		&nbsp;&nbsp;'regex': [RegEx], <i>// Regular expression to test if input is valid</i><br>
-		&nbsp;&nbsp;'error_message': [string] <i>// The message shown if field is invalid</i><br>
-		}<br>
-	</code>
-
-	<p>For example, you might put this in your validin options to test an input field for two-letter values, such as you'd find in US state abbreviations:</p>
-	<code>
-		custom_tests: {<br>
-			&nbsp;&nbsp;'state_abbreviation': {<br>
-				&nbsp;&nbsp;&nbsp;&nbsp;'regex': /[A-Z]{2}/,<br>
-				&nbsp;&nbsp;&nbsp;&nbsp;'error_message': "States are abbreviated with two capital letters"<br>
-			&nbsp;&nbsp;}<br>
-		}
-	</code>
-
-	<form id="maximum_length">
-		<p>The above code would allow you to use that test on a field like so:</p>
-		<input validate="state_abbreviation" placeholder="eg. OR">
-		<input type="submit">
-	</form>
+		<form id="different_types">
+			<h3>Other Input Types</h3>
+			<p>These validations will work with just about any input type, including...</p>
+			<h5>Ranges</h5>
+			<input validate="min:50" type="range">
+			<p>Value: <span class="range_value">50</span></p>
+			<input type="submit">
+		</form>
+		<form>
+			<h4>Selects</h4>
+			<label>Pick a number</label>
+			<select validate="max:5">
+				<option>-1</option>
+				<option>4</option>
+				<option>7</option>
+				<option>13</option>
+			</select>
+			<input type="submit">
+		</form>
+		<form>
+			<h4>Checkboxes</h4>
+			<label><input type="checkbox" required> Click this checkbox*</label>
+			<input type="submit">
+		</form>
+		<form>
+			<h4>Radio Buttons</h4>
+			<label><input type="radio" name="radio" value="1" required> Click this radio button*</label>
+			<input type="submit">
+		</form>
+		<form>
+			<h4>Textareas</h4>
+			<textarea validate="max_length:10" placeholder="This text should be no longer than 10 characters."></textarea>
+			<input type="submit">
+		</form>
+		<form>
+			<h4>Files</h4>
+			<input type="file" accept="image/*" required></input>
+			<input type="submit">
+		</form>
 
 
 
-	<footer>
-		validin &copy; 2017-<script>document.write((new Date).getFullYear());</script>, Thom Hines
-	</footer>
 
+		<h3 id="functions">Functions</h3>
+		<p>Below are a number of javascript functions to give you more control over how your forms are validated and operate.</p>
+
+		<h4 id="getValue">getValue()</h4>
+		<p>Similar to jQuery's val() function, it will return the value of an input, but also returns true/false for checkboxes and the correct value whichever radio button is selected in a set.</p>
+		<code>
+			vnGetValue($input)<br>
+			<i>or, with jQuery:</i><br>
+			$input.getValue()
+		</code>
+		<h5>Arguments:</h5>
+		<table>
+			<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+		</table>
+		
+		
+		<h4 id="addError">addError()</h4>
+		<p>Attach an error message to an input field and disable form without using a validation test. This is useful for instances where a value is programmatically controlled or needs to be validated elsewhere (e.g. server-side).</p>
+		<p>Note: more than one error can be attached to an input via the addError() function, but only one will be shown at a time.</p>
+		<p>Note: the field will show and error and the form disabled until the error is removed.</p>
+		<code>
+			vnAddError($input, error_id, error_message)<br>
+			<i>or, with jQuery:</i><br>
+			$input.addError(error_id, error_message)
+		</code>
+		<h5>Arguments:</h5>
+		<table>
+			<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+			<tr><td>error_id*</td><td>(string) Unique identifier for error to be selectable by removeError()<br>
+				<i>(may only be letters, numbers, hyphens, and underscores)</i></td></tr>
+			<tr><td>error_message*</td><td>(string) error message to be displayed on input</td></tr>
+		</table>
+		
+		
+		<h4 id="removeError">removeError()</h4>
+		<p>Remove an error from an element that was created via addError()</p>
+		<p>Note: the field may still show errors if other validations are unsatisfied</p>
+		<code>
+			vnRemoveError($input, error_id)<br>
+			<i>or, with jQuery:</i><br>
+			$input.removeError(error_id)
+		</code>
+		<h5>Arguments:</h5>
+		<table>
+			<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+			<tr><td>error_id*</td><td>(string) Unique identifier for error created previously by addError()<br>
+		</table>
+		
+		
+		<h4 id="validateInput">validateInput()</h4>
+		<p>Returns whether or not a valid is valid. If invalid, it will also display an error message and disable the form</p>
+		<code>
+			vnValidateInput($input, run_immediately)<br>
+			<i>or, with jQuery:</i><br>
+			$input.validateInput(run_immediately)
+		</code>
+		<h5>Arguments:</h5>
+		<table>
+			<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+			<tr><td>run_immediately</td><td>(boolean) Whether or not to check if input is valid immediately, rather than wait for the default delay</td></tr>
+		</table>
+		
+		
+		<h4 id="isFormValid">isFormValid()</h4>
+		<p>Returns whether or not (true/false) the given form has any errors</p>
+		<code>
+			vnIsFormValid($form)<br>
+			<i>or, with jQuery:</i><br>
+			$input.isFormValid()
+		</code>
+		<h5>Arguments:</h5>
+		<table>
+			<tr><td>$form*</td><td>(jQuery object) jQuery object for the desired form field</td></tr>
+		</table>
+		
+		
+		<h4 id="attachMessage">attachMessage()</h4>
+		<p>Attach an message to an input element. This will not create an error or disable the form.</p>
+		<p>Note: Message will be cleared the next time the validation is checked on the element</p>
+		<code>
+			vnAttachMessage($input, message)<br>
+			<i>or, with jQuery:</i><br>
+			$input.attachMessage(message)
+		</code>
+		<h5>Arguments:</h5>
+		<table>
+			<tr><td>$input*</td><td>(jQuery object) jQuery object for the desired input field</td></tr>
+			<tr><td>message*</td><td>(string) error message to be displayed on input</td></tr>
+		</table>
+		
+		
+		
+		
+		
+
+
+		<h3 id="options">Options</h3>
+		<p>Validin comes pretty much perfect right out of the box, but there are some ways to customize it's behavior. You can add options to the validin() function like so:</p>
+		<code>
+			options = {<br>
+				&nbsp;&nbsp;feedback_delay: 1000,<br>
+				&nbsp;&nbsp;invalid_input_class: "bad_input"<br>
+			};<br>
+			<br>
+			$(window).validin(options);
+		</code>
+
+		<p>Here are the available settings and their defaults:</p>
+
+		<code>
+			feedback_delay: 700, <i>// Number of ms after input before testing validity</i><br>
+			invalid_input_class: "invalid", <i>// Class name added to invalid inputs</i><br>
+			error_message_class: "validation_error", <i>// Class name added to forms with validation errors</i><br>
+			form_error_message: "Please fix any errors in the form", <i>// The message that appears at the bottom of a form if there are any errors present</i><br>
+			required_fields_initial_error_message: "Please fill in all required fields", <i>// Initial message showing why form is disabled if there are required fields but no errors</i><br>
+			required_field_error_message: "This field is required", <i>// Message shown next to required fields that are not filled in AFTER field has lost focus</i><br>
+			custom_tests: [] <i>// Array of custom validation tests (see below)</i>
+		</code>
+
+		<h4 id="custom_validation_tests">Adding Custom Validation Tests</h4>
+		<p>There are a bunch of validation tests already built into validin, but you can make your own with the 'tests' option. Custom validation tests follow this syntax:</p>
+		<code>
+			'validation_name': {<br>
+			&nbsp;&nbsp;'regex': [RegEx], <i>// Regular expression to test if input is valid</i><br>
+			&nbsp;&nbsp;'error_message': [string] <i>// The message shown if field is invalid</i><br>
+			}<br>
+		</code>
+
+		<p>For example, you might put this in your validin options to test an input field for two-letter values, such as you'd find in US state abbreviations:</p>
+		<code>
+			custom_tests: {<br>
+				&nbsp;&nbsp;'state_abbreviation': {<br>
+					&nbsp;&nbsp;&nbsp;&nbsp;'regex': /[A-Z]{2}/,<br>
+					&nbsp;&nbsp;&nbsp;&nbsp;'error_message': "States are abbreviated with two capital letters"<br>
+				&nbsp;&nbsp;}<br>
+			}
+		</code>
+
+		<form id="maximum_length">
+			<p>The above code would allow you to use that test on a field like so:</p>
+			<input validate="state_abbreviation" placeholder="eg. OR">
+			<input type="submit">
+		</form>
+
+
+
+		<footer>
+			validin &copy; 2017-<script>document.write((new Date).getFullYear());</script>, Thom Hines
+		</footer>
+	</div>
 
 
 
@@ -647,6 +738,9 @@
 		});
 
 		$(':input:not([type="submit"])').each(function() {
+
+			if($(this).closest('.try_it_out').length) return;
+
 			$this = $(this);
 			html = $this[0].outerHTML;
 			html = html.replace('required=""', "required")
